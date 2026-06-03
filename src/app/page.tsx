@@ -151,7 +151,7 @@ export default async function Home() {
               {/* arch photo */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images/IMG_4594.jpg"
+                src="/images/IMG_4594.JPG"
                 alt="Cava Bar — кав'ярня у Бродах"
                 className="w-full h-full object-cover
                            rounded-t-[300px] rounded-b-[40px]

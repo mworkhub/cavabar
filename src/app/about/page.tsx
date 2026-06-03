@@ -73,7 +73,7 @@ export default async function AboutPage() {
         <div className="flex justify-center lg:justify-start lg:sticky lg:top-24">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/IMG_4592.jpg"
+            src="/images/IMG_4592.JPG"
             alt="Засновниця Cava Bar"
             className="w-full max-w-[380px] mx-auto lg:mx-0 h-auto
                        rounded-tl-[80px] rounded-br-[80px] rounded-tr-2xl rounded-bl-2xl
