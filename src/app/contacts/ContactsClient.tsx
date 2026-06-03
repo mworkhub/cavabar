@@ -132,29 +132,31 @@ export function ContactsClient() {
 
   return (
     <main className="px-6 py-12 max-w-6xl mx-auto lg:py-16">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+
+      {/* ── Back + Title (always on top) ── */}
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1.5 text-sm text-[#2C1E16]/40
+                   hover:text-[#C68E58] transition-colors mb-8"
+      >
+        <ArrowLeft size={15} strokeWidth={1.75} />
+        На головну
+      </Link>
+
+      <div className="mb-8 lg:mb-0">
+        <p className="text-xs uppercase tracking-[0.22em] text-[#C68E58] mb-3">
+          Як нас знайти
+        </p>
+        <h1 className="font-heading text-4xl md:text-5xl font-bold text-[#2C1E16] leading-tight">
+          Контакти
+        </h1>
+      </div>
+
+      {/* ── Two-column grid ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 items-start mt-0 lg:mt-10">
 
         {/* ════════ LEFT: INFO ════════ */}
-        <div className="flex flex-col gap-10 lg:pr-10">
-
-          {/* back */}
-          <Link
-            href="/"
-            className="self-start inline-flex items-center gap-1.5 text-sm text-[#2C1E16]/40 hover:text-[#C68E58] transition-colors"
-          >
-            <ArrowLeft size={15} strokeWidth={1.75} />
-            На головну
-          </Link>
-
-          {/* title */}
-          <div className="mb-2">
-            <p className="text-xs uppercase tracking-[0.22em] text-[#C68E58] mb-3">
-              Як нас знайти
-            </p>
-            <h1 className="font-heading text-4xl md:text-5xl font-bold text-[#2C1E16] leading-tight">
-              Контакти
-            </h1>
-          </div>
+        <div className="flex flex-col gap-8 order-2 lg:order-1 lg:pr-10">
 
           {/* info blocks */}
           <div className="flex flex-col gap-8">
@@ -204,7 +206,7 @@ export function ContactsClient() {
           </div>
 
           {/* CTA buttons */}
-          <div className="pt-4 flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <a
               href="https://maps.app.goo.gl/ZU3jvbMfTPPYj6vV7"
               target="_blank"
@@ -231,13 +233,14 @@ export function ContactsClient() {
         </div>
 
         {/* ════════ RIGHT: PHOTO ════════ */}
-        <div className="rounded-3xl overflow-hidden shadow-lg w-full">
+        {/* on mobile: order-first so it appears above info blocks; compact height */}
+        <div className="order-1 lg:order-2 rounded-2xl lg:rounded-3xl overflow-hidden shadow-lg w-full">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/images/IMG_2245.jpg"
             alt="Атмосфера кав'ярні Cava Bar у Бродах"
-            className="w-full h-full min-h-[600px] lg:h-[700px] object-cover rounded-3xl
-                       transition-transform duration-700 hover:scale-110"
+            className="w-full object-cover h-[220px] sm:h-[280px] lg:h-[680px]
+                       transition-transform duration-700 hover:scale-105"
           />
         </div>
 
