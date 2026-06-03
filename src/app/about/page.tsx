@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -71,14 +72,18 @@ export default async function AboutPage() {
 
         {/* photo */}
         <div className="flex justify-center lg:justify-start lg:sticky lg:top-24">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/IMG_4592.JPG"
-            alt="Засновниця Cava Bar"
-            className="w-full max-w-[380px] mx-auto lg:mx-0 h-auto
-                       rounded-tl-[80px] rounded-br-[80px] rounded-tr-2xl rounded-bl-2xl
-                       shadow-xl shadow-[#2C1E16]/12 object-cover"
-          />
+          <div className="relative w-full max-w-[380px] mx-auto lg:mx-0 h-[500px]
+                          rounded-tl-[80px] rounded-br-[80px] rounded-tr-2xl rounded-bl-2xl
+                          overflow-hidden shadow-xl shadow-[#2C1E16]/12">
+            <Image
+              src="/images/IMG_4592.JPG"
+              alt="Засновниця Cava Bar"
+              fill
+              className="object-cover"
+              loading="lazy"
+              sizes="(max-width: 1024px) 100vw, 380px"
+            />
+          </div>
         </div>
 
         {/* text */}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { MenuItemCard } from "@/components/menu/MenuItemCard";
@@ -105,8 +106,9 @@ export default async function Home() {
         <div className="flex flex-col lg:flex-row items-center justify-between
                         gap-12 max-w-7xl mx-auto px-6 py-16 w-full">
 
-          {/* ── LEFT: text ── */}
-          <FadeIn delay={0.1} y={24} className="lg:w-1/2 flex flex-col items-start text-left">
+          {/* ── LEFT: text — no FadeIn, renders immediately for FCP ── */}
+          <div className="lg:w-1/2 flex flex-col items-start text-left
+                          animate-[fadeUp_0.6s_ease_both]">
 
             <p className="text-[11px] font-semibold uppercase tracking-widest text-[#C68E58] mb-7">
               Кав&apos;ярня · м. Броди
@@ -142,24 +144,29 @@ export default async function Home() {
               </a>
             </div>
 
-          </FadeIn>
+          </div>
 
-          {/* ── RIGHT: arch photo + glassmorphism badge ── */}
-          <FadeIn delay={0.3} y={20} className="lg:w-1/2 flex justify-center">
-            <div className="relative w-full max-w-[420px] h-[550px] lg:h-[650px] mx-auto">
+          {/* ── RIGHT: arch photo — next/image priority, no FadeIn ── */}
+          <div className="lg:w-1/2 flex justify-center">
+            {/* wrapper provides positioning context for badge */}
+            <div className="relative w-full max-w-[420px] mx-auto">
 
-              {/* arch photo */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/IMG_4594.JPG"
-                alt="Cava Bar — кав'ярня у Бродах"
-                className="w-full h-full object-cover
-                           rounded-t-[300px] rounded-b-[40px]
-                           shadow-2xl shadow-[#2C1E16]/15"
-              />
+              {/* arch photo — priority=true adds preload + fetchpriority="high" */}
+              <div className="relative h-[550px] lg:h-[650px] overflow-hidden
+                              rounded-t-[300px] rounded-b-[40px]
+                              shadow-2xl shadow-[#2C1E16]/15">
+                <Image
+                  src="/images/IMG_4594.JPG"
+                  alt="Cava Bar — кав'ярня у Бродах"
+                  fill
+                  className="object-cover object-top"
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 420px"
+                />
+              </div>
 
-              {/* glassmorphism badge */}
-              <FadeIn delay={0.65} y={12}
+              {/* glassmorphism badge — outside overflow-hidden so it can stick out left */}
+              <FadeIn delay={0.5} y={12}
                 className="absolute bottom-16 -left-8 lg:-left-16 z-20">
                 <div className="bg-white/80 backdrop-blur-md px-6 py-4 rounded-2xl
                                 shadow-xl border border-white flex items-center gap-3">
@@ -176,7 +183,7 @@ export default async function Home() {
               </FadeIn>
 
             </div>
-          </FadeIn>
+          </div>
 
         </div>
       </section>
@@ -287,19 +294,6 @@ export default async function Home() {
           </div>
         </section>
       )}
-
-      {/* ════════════════ MAP ════════════════════ */}
-      <section className="py-0">
-        <div className="w-full h-[320px] lg:h-[400px] overflow-hidden">
-          <iframe
-            title="Cava Bar на карті"
-            src="https://maps.google.com/maps?q=50.0834,25.1531&hl=uk&z=17&output=embed"
-            className="w-full h-full border-0"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-        </div>
-      </section>
 
       {/* ════════════════ CONTACTS ══════════════ */}
       <section className="bg-[#F2EAE0] py-16 px-6">
