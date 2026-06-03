@@ -15,7 +15,7 @@ export function SiteHeader() {
           <img
             src="/images/logo.svg"
             alt="Cava Bar"
-            className="h-12 w-auto"
+            className="h-16 w-auto"
           />
         </Link>
 
