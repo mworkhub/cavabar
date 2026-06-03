@@ -34,11 +34,11 @@ export async function SiteFooter() {
 
   return (
     <footer className="py-8 px-6 border-t border-[#2C1E16]/8 mt-auto">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-5 text-xs text-[#2C1E16]/70">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-5 text-xs text-[#4A3428]">
 
         {/* brand */}
         <div className="flex flex-col gap-1.5">
-          <span className="font-heading text-sm text-[#2C1E16]/85 tracking-wide font-semibold">
+          <span className="font-heading text-sm text-[#2C1E16] tracking-wide font-semibold">
             Cava Bar
           </span>
           <p className="leading-relaxed">{address}</p>
@@ -46,7 +46,7 @@ export async function SiteFooter() {
 
         {/* hours */}
         <div className="flex flex-col gap-1.5 sm:text-center">
-          <span className="font-semibold text-[#2C1E16]/60 uppercase tracking-wide text-[10px]">
+          <span className="font-semibold text-[#6B4C3B] uppercase tracking-wide text-[10px]">
             Графік роботи
           </span>
           {hours.split("\n").map((line, i) => (

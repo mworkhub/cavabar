@@ -19,7 +19,7 @@ const BADGE_STYLES: Record<string, string> = {
 };
 
 function badgeClass(badge: string): string {
-  return BADGE_STYLES[badge] ?? "bg-[#2C1E16]/8 text-[#2C1E16]/55";
+  return BADGE_STYLES[badge] ?? "bg-[#2C1E16]/8 text-[#6B4C3B]";
 }
 
 function formatPrice(price: number): string {
@@ -147,7 +147,7 @@ export function MenuItemModal({ item, onClose, isFav = false, onToggleFav }: Men
           {/* weight + price + actions */}
           <div className="flex items-center justify-between mt-5 pt-4 border-t border-[#2C1E16]/8">
             {item.weight ? (
-              <span className="text-sm text-[#2C1E16]/45">{item.weight}</span>
+              <span className="text-sm text-[#6B4C3B]">{item.weight}</span>
             ) : (
               <span />
             )}

@@ -89,7 +89,7 @@ export function MenuItemCard({ item, isFav = false, onToggleFav }: MenuItemCardP
 
             {/* weight */}
             {item.weight && (
-              <p className="text-xs text-[#2C1E16]/60 mt-0.5 leading-none">{item.weight}</p>
+              <p className="text-xs text-[#6B4C3B] mt-0.5 leading-none">{item.weight}</p>
             )}
 
             {/* description */}

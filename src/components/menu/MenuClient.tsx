@@ -92,7 +92,7 @@ export function MenuClient({ categories, items }: Props) {
               "flex-shrink-0 flex items-center gap-1.5 px-4 py-[7px] rounded-full text-sm font-medium transition-all",
               showFavorites
                 ? "bg-[#C68E58] text-white shadow-sm"
-                : "border border-[#2C1E16]/30 text-[#2C1E16]/80 hover:border-[#C68E58]/60 hover:text-[#C68E58]",
+                : "border border-[#2C1E16]/30 text-[#2C1E16] hover:border-[#C68E58]/60 hover:text-[#C68E58]",
             ].join(" ")}
           >
             <Heart
@@ -119,7 +119,7 @@ export function MenuClient({ categories, items }: Props) {
                 "flex-shrink-0 px-4 py-[7px] rounded-full text-sm font-medium transition-all",
                 !showFavorites && activeId === cat.id
                   ? "bg-[#C68E58] text-white shadow-sm"
-                  : "border border-[#2C1E16]/30 text-[#2C1E16]/80 hover:border-[#C68E58]/60 hover:text-[#C68E58]",
+                  : "border border-[#2C1E16]/30 text-[#2C1E16] hover:border-[#C68E58]/60 hover:text-[#C68E58]",
               ].join(" ")}
             >
               {cat.name}
@@ -139,7 +139,7 @@ export function MenuClient({ categories, items }: Props) {
                 <Heart size={28} strokeWidth={1.5} stroke="#C68E58" fill="none" />
               </div>
               <p className="font-heading text-xl text-[#2C1E16]">Тут поки порожньо</p>
-              <p className="text-[#2C1E16]/70 text-sm leading-relaxed max-w-[240px]">
+              <p className="text-[#4A3428] text-sm leading-relaxed max-w-[240px]">
                 Натисніть ❤ на будь-якій страві — і вона збережеться тут для наступного візиту.
               </p>
             </div>
@@ -174,7 +174,7 @@ export function MenuClient({ categories, items }: Props) {
                     {cat.name}
                   </h2>
                   {cat.description && (
-                    <p className="text-[#2C1E16]/70 text-sm mt-1 mb-5">{cat.description}</p>
+                    <p className="text-[#4A3428] text-sm mt-1 mb-5">{cat.description}</p>
                   )}
                   <StaggeredList className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mt-4">
                     {catItems.map((item) => (
@@ -197,7 +197,7 @@ export function MenuClient({ categories, items }: Props) {
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-[#2C1E16]">Пакування з собою</p>
-                <p className="text-xs text-[#2C1E16]/75 mt-0.5">
+                <p className="text-xs text-[#2C1E16] mt-0.5">
                   До вартості замовлення додається{" "}
                   <span className="font-bold text-[#2C1E16]">+20 грн</span>
                 </p>

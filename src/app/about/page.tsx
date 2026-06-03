@@ -49,7 +49,7 @@ export default async function AboutPage() {
       {/* back */}
       <Link
         href="/"
-        className="inline-flex items-center gap-1.5 text-sm text-[#2C1E16]/40
+        className="inline-flex items-center gap-1.5 text-sm text-[#6B4C3B]
                    hover:text-[#C68E58] transition-colors mb-12"
       >
         <ArrowLeft size={15} strokeWidth={1.75} />
@@ -96,7 +96,7 @@ export default async function AboutPage() {
 
           <div className="w-10 h-[2px] bg-[#C68E58] rounded-full" />
 
-          <div className="space-y-5 text-[#2C1E16]/80 leading-loose text-[15px]">
+          <div className="space-y-5 text-[#2C1E16] leading-loose text-[15px]">
             <p>
               Cava Bar — це затишний простір у самому серці Бродів, де час ніби сповільнюється.
               Ми відкрилися з однією простою ідеєю: зробити якісну каву доступною для кожного,
@@ -159,7 +159,7 @@ export default async function AboutPage() {
               <span className="text-3xl">{icon}</span>
               <div>
                 <p className="font-heading text-lg font-bold text-[#2C1E16] mb-1.5">{title}</p>
-                <p className="text-sm text-[#2C1E16]/75 leading-relaxed">{text}</p>
+                <p className="text-sm text-[#2C1E16] leading-relaxed">{text}</p>
               </div>
             </div>
           ))}

@@ -31,7 +31,7 @@ export default async function ReviewsPage() {
       <div className="pt-6 pb-10">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-[#2C1E16]/40 hover:text-[#C68E58] transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm text-[#6B4C3B] hover:text-[#C68E58] transition-colors"
         >
           <ArrowLeft size={15} strokeWidth={1.75} />
           На головну

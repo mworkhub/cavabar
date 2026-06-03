@@ -35,7 +35,7 @@ export function TopOfDay({ item }: { item: MenuItem }) {
               {item.name}
             </p>
             {item.description && (
-              <p className="text-[13px] text-[#2C1E16]/55 leading-relaxed line-clamp-1">
+              <p className="text-[13px] text-[#6B4C3B] leading-relaxed line-clamp-1">
                 {item.description}
               </p>
             )}

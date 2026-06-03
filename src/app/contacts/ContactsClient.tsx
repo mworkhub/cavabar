@@ -136,7 +136,7 @@ export function ContactsClient() {
       {/* ── Back + Title (always on top) ── */}
       <Link
         href="/"
-        className="inline-flex items-center gap-1.5 text-sm text-[#2C1E16]/40
+        className="inline-flex items-center gap-1.5 text-sm text-[#6B4C3B]
                    hover:text-[#C68E58] transition-colors mb-8"
       >
         <ArrowLeft size={15} strokeWidth={1.75} />
@@ -170,7 +170,7 @@ export function ContactsClient() {
 
             <InfoBlock icon={<Clock size={22} strokeWidth={1.5} />} label="Графік роботи">
               <div className="flex items-baseline justify-between gap-6 max-w-[200px]">
-                <span className="text-[#2C1E16]/75">Пн–Нд</span>
+                <span className="text-[#2C1E16]">Пн–Нд</span>
                 <span className="font-medium tabular-nums">09:00 – 22:00</span>
               </div>
             </InfoBlock>
@@ -289,7 +289,7 @@ export function ContactsClient() {
               onClick={closeModal}
               aria-label="Закрити"
               className="absolute top-4 right-4 w-9 h-9 rounded-full bg-[#2C1E16]/8
-                         flex items-center justify-center text-[#2C1E16]/50
+                         flex items-center justify-center text-[#6B4C3B]
                          hover:bg-[#2C1E16]/12 hover:text-[#2C1E16] transition-colors"
             >
               <X size={16} strokeWidth={2} />
@@ -301,7 +301,7 @@ export function ContactsClient() {
                   <span className="text-3xl">✉️</span>
                 </div>
                 <h2 className="font-heading text-2xl font-bold text-[#2C1E16] mb-3">Дякуємо!</h2>
-                <p className="text-[#2C1E16]/75 text-sm leading-relaxed max-w-xs">
+                <p className="text-[#2C1E16] text-sm leading-relaxed max-w-xs">
                   Ваша заявка прийнята. Ми зв&apos;яжемося з вами найближчим часом.
                 </p>
                 <button
@@ -323,7 +323,7 @@ export function ContactsClient() {
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold uppercase tracking-wide text-[#2C1E16]/65">
+                    <label className="text-xs font-semibold uppercase tracking-wide text-[#4A3428]">
                       Ваше ім&apos;я
                     </label>
                     <input
@@ -340,7 +340,7 @@ export function ContactsClient() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold uppercase tracking-wide text-[#2C1E16]/65">
+                    <label className="text-xs font-semibold uppercase tracking-wide text-[#4A3428]">
                       Телефон
                     </label>
                     <input
@@ -357,7 +357,7 @@ export function ContactsClient() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold uppercase tracking-wide text-[#2C1E16]/65">
+                    <label className="text-xs font-semibold uppercase tracking-wide text-[#4A3428]">
                       Повідомлення
                     </label>
                     <textarea

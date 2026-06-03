@@ -68,17 +68,17 @@ function ReviewCard({ review }: { review: Review }) {
           <p className="font-heading text-[15px] font-semibold text-[#2C1E16]">
             {review.author_name}
           </p>
-          <p className="text-[11px] text-[#2C1E16]/55 mt-0.5">
+          <p className="text-[11px] text-[#6B4C3B] mt-0.5">
             {formatDate(review.created_at)}
           </p>
         </div>
         <StarDisplay rating={review.rating} />
       </div>
-      <p className="text-[#2C1E16]/80 text-sm leading-relaxed">{review.text}</p>
+      <p className="text-[#2C1E16] text-sm leading-relaxed">{review.text}</p>
       {review.reply && (
         <div className="pt-3 pl-4 border-l-2 border-[#C68E58]/30">
           <p className="text-xs font-semibold text-[#C68E58] mb-1">Відповідь Cava Bar</p>
-          <p className="text-[#2C1E16]/75 text-xs leading-relaxed">{review.reply}</p>
+          <p className="text-[#2C1E16] text-xs leading-relaxed">{review.reply}</p>
         </div>
       )}
     </article>
@@ -198,12 +198,12 @@ export function ReviewsClient({ initialReviews }: { initialReviews: Review[] }) 
                   {avgRating.toFixed(1)}
                 </p>
                 <StarDisplay rating={Math.round(avgRating)} size={16} />
-                <p className="text-[12px] text-[#2C1E16]/65 tracking-wide">
+                <p className="text-[12px] text-[#4A3428] tracking-wide">
                   {reviews.length} {pluralReviews(reviews.length)}
                 </p>
               </div>
             ) : (
-              <p className="text-[#2C1E16]/60 text-sm">Поки немає відгуків</p>
+              <p className="text-[#6B4C3B] text-sm">Поки немає відгуків</p>
             )}
 
             {/* CTA */}
@@ -229,7 +229,7 @@ export function ReviewsClient({ initialReviews }: { initialReviews: Review[] }) 
               <p className="font-heading text-xl text-[#2C1E16] mb-2">
                 Тут поки що порожньо
               </p>
-              <p className="text-[#2C1E16]/50 text-sm leading-relaxed mb-6">
+              <p className="text-[#6B4C3B] text-sm leading-relaxed mb-6">
                 Станьте першим, хто поділиться враженнями!
               </p>
               <button
@@ -289,7 +289,7 @@ export function ReviewsClient({ initialReviews }: { initialReviews: Review[] }) 
               onClick={closeModal}
               aria-label="Закрити"
               className="absolute top-4 right-4 w-9 h-9 rounded-full bg-[#2C1E16]/8
-                         flex items-center justify-center text-[#2C1E16]/50
+                         flex items-center justify-center text-[#6B4C3B]
                          hover:bg-[#2C1E16]/12 hover:text-[#2C1E16] transition-colors"
             >
               <X size={16} strokeWidth={2} />
@@ -304,7 +304,7 @@ export function ReviewsClient({ initialReviews }: { initialReviews: Review[] }) 
                 <h2 className="font-heading text-2xl font-bold text-[#2C1E16] mb-3">
                   Дякуємо!
                 </h2>
-                <p className="text-[#2C1E16]/75 text-sm leading-relaxed max-w-xs">
+                <p className="text-[#2C1E16] text-sm leading-relaxed max-w-xs">
                   Ваш відгук надіслано на модерацію і з&apos;явиться на сайті
                   найближчим часом.
                 </p>
@@ -331,7 +331,7 @@ export function ReviewsClient({ initialReviews }: { initialReviews: Review[] }) 
 
                   {/* name */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold uppercase tracking-wide text-[#2C1E16]/65">
+                    <label className="text-xs font-semibold uppercase tracking-wide text-[#4A3428]">
                       Ваше ім&apos;я
                     </label>
                     <input
@@ -349,7 +349,7 @@ export function ReviewsClient({ initialReviews }: { initialReviews: Review[] }) 
 
                   {/* star picker */}
                   <div className="flex flex-col gap-2">
-                    <label className="text-xs font-semibold uppercase tracking-wide text-[#2C1E16]/65">
+                    <label className="text-xs font-semibold uppercase tracking-wide text-[#4A3428]">
                       Оцінка
                     </label>
                     <StarPicker value={rating} onChange={setRating} />
@@ -357,7 +357,7 @@ export function ReviewsClient({ initialReviews }: { initialReviews: Review[] }) 
 
                   {/* text */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold uppercase tracking-wide text-[#2C1E16]/65">
+                    <label className="text-xs font-semibold uppercase tracking-wide text-[#4A3428]">
                       Коментар
                     </label>
                     <textarea
