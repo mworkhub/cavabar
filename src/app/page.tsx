@@ -119,7 +119,7 @@ export default async function Home() {
               <span className="text-[#C68E58] italic">це про&nbsp;любов</span>
             </h1>
 
-            <p className="text-[#2C1E16]/55 text-base leading-relaxed mb-10 max-w-sm">
+            <p className="text-[#2C1E16]/75 text-base leading-relaxed mb-10 max-w-sm">
               Затишне місце у серці Бродів, де кожна чашка
               приготована з&nbsp;душею і щирою турботою.
             </p>
@@ -135,7 +135,7 @@ export default async function Home() {
               <a
                 href="/menu"
                 className="px-8 py-3.5 rounded-full text-sm font-medium
-                           border border-[#2C1E16]/20 text-[#2C1E16]/70
+                           border border-[#2C1E16]/30 text-[#2C1E16]/85
                            hover:border-[#C68E58] hover:text-[#C68E58] transition-colors duration-200"
               >
                 Повне меню
@@ -172,7 +172,7 @@ export default async function Home() {
                     <p className="font-heading text-sm font-bold text-[#2C1E16] leading-none mb-0.5">
                       4.6 / 5
                     </p>
-                    <p className="text-[10px] uppercase tracking-wider text-[#2C1E16]/45 leading-none">
+                    <p className="text-[10px] uppercase tracking-wider text-[#2C1E16]/65 leading-none">
                       За відгуками гостей
                     </p>
                   </div>
@@ -194,7 +194,7 @@ export default async function Home() {
           <h2 className="font-heading text-3xl md:text-4xl text-[#2C1E16] mb-7">
             Про нас
           </h2>
-          <p className="text-[#2C1E16]/60 leading-[1.9] text-base mb-10">
+          <p className="text-[#2C1E16]/80 leading-[1.9] text-base mb-10">
             Cava Bar — це простір, де час сповільнюється. Ми варимо каву
             зі спеціально підібраних купажів від локальних обсмажувачів,
             подаємо свіжу випічку щодня і щиро радіємо кожному, хто
@@ -277,10 +277,10 @@ export default async function Home() {
                               fill={n <= review.rating ? "#C68E58" : "#E8DDD3"} />
                       ))}
                     </div>
-                    <p className="text-[#2C1E16]/70 text-sm leading-relaxed line-clamp-4">
+                    <p className="text-[#2C1E16]/80 text-sm leading-relaxed line-clamp-4">
                       {review.text}
                     </p>
-                    <p className="text-xs font-semibold text-[#2C1E16]/40 mt-auto">
+                    <p className="text-xs font-semibold text-[#2C1E16]/65 mt-auto">
                       {review.author_name}
                     </p>
                   </article>
@@ -298,14 +298,14 @@ export default async function Home() {
 
           <div>
             <p className="font-heading text-lg text-[#2C1E16] mb-1">Адреса</p>
-            <p className="text-[#2C1E16]/55 text-sm leading-relaxed">
+            <p className="text-[#2C1E16]/75 text-sm leading-relaxed">
               вул. Площа Ринок, 30<br />м. Броди
             </p>
           </div>
 
           <div>
             <p className="font-heading text-lg text-[#2C1E16] mb-1">Графік</p>
-            <p className="text-[#2C1E16]/55 text-sm leading-relaxed">
+            <p className="text-[#2C1E16]/75 text-sm leading-relaxed">
               Пн–Нд: 09:00 – 22:00
             </p>
           </div>

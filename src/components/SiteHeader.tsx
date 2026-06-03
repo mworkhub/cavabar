@@ -23,21 +23,21 @@ export function SiteHeader() {
         <nav className="flex items-center gap-5 sm:gap-7">
           <Link
             href="/menu"
-            className="text-[13px] font-medium uppercase tracking-[0.15em] text-[#2C1E16]/55
+            className="text-[13px] font-medium uppercase tracking-[0.15em] text-[#2C1E16]/80
                        hover:text-[#C68E58] transition-colors duration-200"
           >
             Меню
           </Link>
           <Link
             href="/reviews"
-            className="text-[13px] font-medium uppercase tracking-[0.15em] text-[#2C1E16]/55
+            className="text-[13px] font-medium uppercase tracking-[0.15em] text-[#2C1E16]/80
                        hover:text-[#C68E58] transition-colors duration-200"
           >
             Відгуки
           </Link>
           <Link
             href="/contacts"
-            className="text-[13px] font-medium uppercase tracking-[0.15em] text-[#2C1E16]/55
+            className="text-[13px] font-medium uppercase tracking-[0.15em] text-[#2C1E16]/80
                        hover:text-[#C68E58] transition-colors duration-200"
           >
             Контакти
