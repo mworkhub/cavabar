@@ -153,10 +153,10 @@ export function ContactsClient() {
       </div>
 
       {/* ── Two-column grid ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 mt-0 lg:mt-10">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 items-start mt-0 lg:mt-10">
 
         {/* ════════ LEFT: INFO ════════ */}
-        <div className="flex flex-col justify-between gap-8 order-2 lg:order-1 lg:pr-10">
+        <div className="flex flex-col gap-8 order-2 lg:order-1 lg:pr-10">
 
           {/* info blocks */}
           <div className="flex flex-col gap-8">
@@ -234,12 +234,12 @@ export function ContactsClient() {
 
         {/* ════════ RIGHT: PHOTO ════════ */}
         {/* mobile: fixed height; desktop: stretches to match left column */}
-        <div className="order-1 lg:order-2 rounded-2xl lg:rounded-3xl overflow-hidden shadow-lg w-full h-[320px] sm:h-[400px] lg:h-full lg:min-h-[420px]">
+        <div className="order-1 lg:order-2 rounded-2xl overflow-hidden shadow-lg w-full">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/images/IMG_2245.jpg"
             alt="Атмосфера кав'ярні Cava Bar у Бродах"
-            className="w-full h-full object-cover object-center
+            className="w-full object-cover h-[320px] sm:h-[400px] lg:h-[450px]
                        transition-transform duration-700 hover:scale-105"
           />
         </div>
