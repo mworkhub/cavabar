@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+:root {
+  --background: #FDFBF7;
+  --foreground: #2C1E16;
+  --accent:     #C68E58;
+  --muted:      #F2EAE0;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent:     var(--accent);
+  --color-muted:      var(--muted);
+  --font-sans:        var(--font-montserrat);
+  --font-heading:     var(--font-playfair);
+}
+
+body {
+  background:  var(--background);
+  color:       var(--foreground);
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Preloader animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes kenBurns {
+  from { transform: scale(1)    translateY(0%);  }
+  to   { transform: scale(1.08) translateY(-2%); }
+}
+
+@keyframes cava-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes cava-grow {
+  from { opacity: 0; transform: scaleX(0); }
+  to   { opacity: 1; transform: scaleX(1); }
+}
