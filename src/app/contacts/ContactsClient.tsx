@@ -250,10 +250,10 @@ export function ContactsClient() {
       <div className="mt-12 rounded-3xl overflow-hidden shadow-lg w-full h-[320px] lg:h-[420px]">
         <iframe
           title="Cava Bar на карті"
-          src="https://maps.google.com/maps?q=50.0834,25.1531&hl=uk&z=17&output=embed"
+          src="https://www.openstreetmap.org/export/embed.html?bbox=25.1480%2C50.0804%2C25.1582%2C50.0864&layer=mapnik&marker=50.0834%2C25.1531"
           className="w-full h-full border-0"
           loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
+          allowFullScreen
         />
       </div>
 
