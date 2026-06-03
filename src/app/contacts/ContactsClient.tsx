@@ -247,13 +247,17 @@ export function ContactsClient() {
       </div>
 
       {/* ════════════════ MAP ════════════════════ */}
-      <div className="mt-12 rounded-3xl overflow-hidden shadow-lg w-full h-[320px] lg:h-[420px]">
+      <div className="mt-12 w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-lg">
         <iframe
-          title="Cava Bar на карті"
-          src="https://www.openstreetmap.org/export/embed.html?bbox=25.1480%2C50.0804%2C25.1582%2C50.0864&layer=mapnik&marker=50.0834%2C25.1531"
-          className="w-full h-full border-0"
-          loading="lazy"
+          src="https://www.google.com/maps?q=Площа+Ринок,+30,+Броди,+Львівська+область&output=embed"
+          width="100%"
+          height="100%"
+          style={{ border: 0 }}
           allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          className="w-full h-full"
+          title="Cava Bar на карті"
         />
       </div>
 
