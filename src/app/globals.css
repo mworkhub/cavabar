@@ -30,6 +30,15 @@ body {
   display: none;
 }
 
+/* Prevent reduced-motion from leaving animated elements invisible */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* ── Preloader animations ── */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }

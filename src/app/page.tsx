@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { MenuItemCard } from "@/components/menu/MenuItemCard";
@@ -106,9 +105,8 @@ export default async function Home() {
         <div className="flex flex-col lg:flex-row items-center justify-between
                         gap-12 max-w-7xl mx-auto px-6 py-16 w-full">
 
-          {/* ── LEFT: text — no FadeIn, renders immediately for FCP ── */}
-          <div className="lg:w-1/2 flex flex-col items-start text-left
-                          animate-[fadeUp_0.6s_ease_both]">
+          {/* ── LEFT: text — always visible, no animation dependency ── */}
+          <div className="lg:w-1/2 flex flex-col items-start text-left">
 
             <p className="text-[11px] font-semibold uppercase tracking-widest text-[#C68E58] mb-7">
               Кав&apos;ярня · м. Броди
@@ -146,22 +144,21 @@ export default async function Home() {
 
           </div>
 
-          {/* ── RIGHT: arch photo — next/image priority, no FadeIn ── */}
+          {/* ── RIGHT: arch photo ── */}
           <div className="lg:w-1/2 flex justify-center">
-            {/* wrapper provides positioning context for badge */}
             <div className="relative w-full max-w-[420px] mx-auto">
 
-              {/* arch photo — priority=true adds preload + fetchpriority="high" */}
-              <div className="relative h-[550px] lg:h-[650px] overflow-hidden
+              {/* arch photo */}
+              <div className="h-[480px] sm:h-[550px] lg:h-[650px] overflow-hidden
                               rounded-t-[300px] rounded-b-[40px]
                               shadow-2xl shadow-[#2C1E16]/15">
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src="/images/IMG_4594.JPG"
                   alt="Cava Bar — кав'ярня у Бродах"
-                  fill
-                  className="object-cover object-top"
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 420px"
+                  className="w-full h-full object-cover object-top"
+                  loading="eager"
+                  fetchPriority="high"
                 />
               </div>
 
