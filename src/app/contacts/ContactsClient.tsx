@@ -239,7 +239,7 @@ export function ContactsClient() {
           <img
             src="/images/IMG_2245.jpg"
             alt="Атмосфера кав'ярні Cava Bar у Бродах"
-            className="w-full object-cover h-[220px] sm:h-[280px] lg:h-[680px]
+            className="w-full object-cover h-[320px] sm:h-[400px] lg:h-[680px]
                        transition-transform duration-700 hover:scale-105"
           />
         </div>
