@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
@@ -85,7 +86,9 @@ export default async function MenuPage() {
 
       {/* ════ Interactive section (client) ════ */}
       {cats.length > 0 && (
-        <MenuClient categories={cats} items={items_} />
+        <Suspense>
+          <MenuClient categories={cats} items={items_} />
+        </Suspense>
       )}
     </main>
   );

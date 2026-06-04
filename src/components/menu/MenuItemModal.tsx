@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
-import { X, Heart, Share2 } from "lucide-react";
+import { useEffect, useCallback, useState } from "react";
+import { X, Heart, Share2, Check } from "lucide-react";
 import type { MenuItem } from "@/types/database";
 
 const BADGE_STYLES: Record<string, string> = {
@@ -43,17 +43,19 @@ interface MenuItemModalProps {
 
 export function MenuItemModal({ item, onClose, isFav = false, onToggleFav }: MenuItemModalProps) {
   const badges = item.badges ?? [];
+  const [copied, setCopied] = useState(false);
 
   const handleShare = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const url = window.location.href;
+    const shareUrl = `${window.location.origin}/menu?item=${item.id}`;
     if (navigator.share) {
-      await navigator.share({ title: item.name, text: "Спробуй це в Cava Bar!", url }).catch(() => {});
+      await navigator.share({ title: item.name, text: "Спробуй це в Cava Bar!", url: shareUrl }).catch(() => {});
     } else {
-      await navigator.clipboard.writeText(url).catch(() => {});
-      alert("Посилання скопійовано!");
+      await navigator.clipboard.writeText(shareUrl).catch(() => {});
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
-  }, [item.name]);
+  }, [item.id, item.name]);
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -155,10 +157,12 @@ export function MenuItemModal({ item, onClose, isFav = false, onToggleFav }: Men
               <button
                 onClick={handleShare}
                 aria-label="Поділитися"
-                className="w-5 h-5 flex items-center justify-center
-                           hover:scale-110 active:scale-95 transition-transform duration-100"
+                className="flex items-center gap-1.5 text-[#C68E58] hover:scale-110 active:scale-95 transition-transform duration-100"
               >
-                <Share2 size={18} strokeWidth={2} stroke="#C68E58" />
+                {copied
+                  ? <><Check size={15} strokeWidth={2.5} /><span className="text-xs font-medium">Скопійовано</span></>
+                  : <Share2 size={18} strokeWidth={2} />
+                }
               </button>
               {onToggleFav && (
                 <button

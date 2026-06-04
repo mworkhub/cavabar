@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 import type { MenuCategory, MenuItem } from "@/types/database";
 import { MenuItemCard } from "./MenuItemCard";
+import { MenuItemModal } from "./MenuItemModal";
 import { StaggeredList } from "@/components/ui/StaggeredList";
 import { useFavorites } from "@/hooks/useFavorites";
 
@@ -15,11 +17,22 @@ interface Props {
 export function MenuClient({ categories, items }: Props) {
   const [activeId,      setActiveId]      = useState<string>(categories[0]?.id ?? "");
   const [showFavorites, setShowFavorites] = useState(false);
+  const [deepItem,      setDeepItem]      = useState<MenuItem | null>(null);
   const navRef             = useRef<HTMLDivElement>(null);
   const blockRef           = useRef(false);
   const showFavoritesRef   = useRef(false);
 
   const { isFav, toggle, count, isMounted } = useFavorites();
+  const searchParams = useSearchParams();
+  const router       = useRouter();
+
+  /* auto-open item from URL param ?item=<id> */
+  useEffect(() => {
+    const id = searchParams.get("item");
+    if (!id) return;
+    const found = items.find((i) => i.id === id);
+    if (found) setDeepItem(found);
+  }, [searchParams, items]);
 
   /* group items by category_id */
   const byCategory = items.reduce<Record<string, MenuItem[]>>((acc, item) => {
@@ -206,6 +219,18 @@ export function MenuClient({ categories, items }: Props) {
           </>
         )}
       </div>
+      {/* deep-link modal — opened via ?item=<id> */}
+      {deepItem && (
+        <MenuItemModal
+          item={deepItem}
+          isFav={isFav(deepItem.id)}
+          onToggleFav={toggle}
+          onClose={() => {
+            setDeepItem(null);
+            router.replace("/menu", { scroll: false });
+          }}
+        />
+      )}
     </>
   );
 }
