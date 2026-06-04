@@ -49,11 +49,16 @@ export function MenuItemModal({ item, onClose, isFav = false, onToggleFav }: Men
     e.stopPropagation();
     const shareUrl = `${window.location.origin}/menu?item=${item.id}`;
     if (navigator.share) {
-      await navigator.share({ title: item.name, text: "Спробуй це в Cava Bar!", url: shareUrl }).catch(() => {});
+      navigator.share({
+        title: item.name || "Cava Bar",
+        text: `Спробуй ${item.name} в Cava Bar!`,
+        url: shareUrl,
+      }).catch((err) => console.log("Помилка share:", err));
     } else {
-      await navigator.clipboard.writeText(shareUrl).catch(() => {});
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
     }
   }, [item.id, item.name]);
 
