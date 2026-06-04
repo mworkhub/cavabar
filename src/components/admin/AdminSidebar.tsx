@@ -5,17 +5,19 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, UtensilsCrossed, Star, MessageSquare,
-  Settings, LogOut, Coffee, ImageIcon, Menu, X,
+  Settings, LogOut, Coffee, ImageIcon, Menu, X, FileText, Briefcase,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 const NAV = [
-  { href: "/admin",          label: "Дашборд",     icon: LayoutDashboard },
-  { href: "/admin/menu",     label: "Меню",         icon: UtensilsCrossed },
-  { href: "/admin/reviews",  label: "Відгуки",      icon: Star },
-  { href: "/admin/leads",    label: "Заявки",       icon: MessageSquare },
-  { href: "/admin/gallery",  label: "Галерея",      icon: ImageIcon },
-  { href: "/admin/settings", label: "Налаштування", icon: Settings },
+  { href: "/admin",           label: "Дашборд",     icon: LayoutDashboard },
+  { href: "/admin/menu",      label: "Меню",         icon: UtensilsCrossed },
+  { href: "/admin/reviews",   label: "Відгуки",      icon: Star },
+  { href: "/admin/leads",     label: "Заявки",       icon: MessageSquare },
+  { href: "/admin/gallery",   label: "Галерея",      icon: ImageIcon },
+  { href: "/admin/about",     label: "Про нас",      icon: FileText },
+  { href: "/admin/vacancies", label: "Вакансії",     icon: Briefcase },
+  { href: "/admin/settings",  label: "Налаштування", icon: Settings },
 ];
 
 export function AdminSidebar() {

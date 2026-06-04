@@ -55,6 +55,24 @@ export interface GalleryItem {
   created_at: string;
 }
 
+export interface Vacancy {
+  id: string;
+  title: string;
+  emoji: string | null;
+  description: string;
+  requirements: string[];
+  schedule: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface SiteContent {
+  key: string;
+  value: string;
+  updated_at: string;
+}
+
 export interface Review {
   id: string;
   author_name: string;

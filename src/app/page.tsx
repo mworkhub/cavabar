@@ -6,6 +6,9 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { FadeIn } from "@/components/ui/FadeIn";
 import type { MenuItem, Review } from "@/types/database";
 
+const ABOUT_DEFAULT =
+  "Cava Bar — це простір, де час сповільнюється. Ми варимо каву зі спеціально підібраних купажів від локальних обсмажувачів, подаємо свіжу випічку щодня і щиро радіємо кожному, хто до нас завітає.";
+
 export const metadata: Metadata = {
   title: "Cava Bar — Кав'ярня в Бродах | Меню, Відгуки, Контакти",
   description:
@@ -70,7 +73,7 @@ export default async function Home() {
     "Сирники з карамеллю",
   ];
 
-  const [{ data: rows }, { data: reviewRows }] = await Promise.all([
+  const [{ data: rows }, { data: reviewRows }, { data: aboutRow }] = await Promise.all([
     supabase
       .from("menu_items")
       .select("*")
@@ -82,7 +85,14 @@ export default async function Home() {
       .eq("approved", true)
       .order("created_at", { ascending: false })
       .limit(3),
+    supabase
+      .from("site_content")
+      .select("value")
+      .eq("key", "about_text")
+      .single(),
   ]);
+
+  const aboutText: string = (aboutRow as { value?: string } | null)?.value ?? ABOUT_DEFAULT;
 
   // preserve the desired display order
   const featuredItems: MenuItem[] = FEATURED_NAMES
@@ -195,10 +205,7 @@ export default async function Home() {
             Про нас
           </h2>
           <p className="text-[#2C1E16] leading-[1.9] text-base mb-10">
-            Cava Bar — це простір, де час сповільнюється. Ми варимо каву
-            зі спеціально підібраних купажів від локальних обсмажувачів,
-            подаємо свіжу випічку щодня і щиро радіємо кожному, хто
-            до нас завітає.
+            {aboutText}
           </p>
           <a
             href="/about"

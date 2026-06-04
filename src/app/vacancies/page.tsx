@@ -1,14 +1,25 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 import { VacanciesClient } from "./VacanciesClient";
+import type { Vacancy } from "@/types/database";
 
 export const metadata: Metadata = {
   title: "Вакансії — Cava Bar",
   description: "Приєднуйся до команди Cava Bar у Бродах. Відкриті вакансії: бариста, офіціант, кухар.",
 };
 
-export default function VacanciesPage() {
+export default async function VacanciesPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("vacancies")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+
+  const vacancies = (data ?? []) as Vacancy[];
+
   return (
     <main className="px-6 py-12 max-w-6xl mx-auto lg:py-16">
 
@@ -21,7 +32,6 @@ export default function VacanciesPage() {
         На головну
       </Link>
 
-      {/* ── title ── */}
       <div className="max-w-2xl">
         <p className="text-xs uppercase tracking-[0.22em] text-[#C68E58] mb-3">
           Робота у Cava Bar
@@ -36,8 +46,7 @@ export default function VacanciesPage() {
         </p>
       </div>
 
-      {/* ── cards + form (client) ── */}
-      <VacanciesClient />
+      <VacanciesClient vacancies={vacancies} />
 
     </main>
   );
