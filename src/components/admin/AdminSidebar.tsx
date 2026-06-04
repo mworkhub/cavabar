@@ -74,14 +74,13 @@ export function AdminSidebar() {
         ].join(" ")}
       >
         {/* brand */}
-        <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between gap-3">
-          <Link href="/admin" aria-label="Дашборд" className="hover:opacity-80 transition-opacity">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/logo.svg"
-              alt="Cava Bar"
-              className="h-10 w-auto object-contain brightness-0 invert"
-            />
+        <div className="px-5 py-5 border-b border-white/10 flex items-center justify-between gap-3">
+          <Link href="/admin" aria-label="Дашборд" className="flex items-center gap-3 min-w-0 hover:opacity-85 transition-opacity">
+            <div className="w-14 h-14 rounded-xl bg-[#F2EAE0] flex items-center justify-center shrink-0 p-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/logo.svg" alt="Cava Bar" className="w-full h-full object-contain" />
+            </div>
+            <p className="text-white/40 text-[11px] leading-snug">Admin Panel</p>
           </Link>
           <button
             onClick={() => setIsOpen(false)}
