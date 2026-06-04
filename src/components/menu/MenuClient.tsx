@@ -26,13 +26,14 @@ export function MenuClient({ categories, items }: Props) {
   const searchParams = useSearchParams();
   const router       = useRouter();
 
+  const itemId = searchParams.get("item");
+
   /* auto-open item from URL param ?item=<id> */
   useEffect(() => {
-    const id = searchParams.get("item");
-    if (!id) return;
-    const found = items.find((i) => i.id === id);
+    if (!itemId) return;
+    const found = items.find((i) => i.id === itemId);
     if (found) setDeepItem(found);
-  }, [searchParams, items]);
+  }, [itemId, items]);
 
   /* group items by category_id */
   const byCategory = items.reduce<Record<string, MenuItem[]>>((acc, item) => {
