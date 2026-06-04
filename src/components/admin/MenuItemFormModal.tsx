@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { X, Upload, ImageIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { MenuItem, MenuCategory } from "@/types/database";
 
@@ -74,9 +74,13 @@ export function MenuItemFormModal({ item, categories, onClose, onSaved }: Props)
   const [form, setForm] = useState<FormState>(
     isEdit ? itemToForm(item) : emptyForm(categories)
   );
-  const [slugEdited, setSlugEdited] = useState(isEdit);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [slugEdited,   setSlugEdited]   = useState(isEdit);
+  const [loading,      setLoading]      = useState(false);
+  const [isUploading,  setIsUploading]  = useState(false);
+  const [error,        setError]        = useState<string | null>(null);
+  const [imageFile,    setImageFile]    = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>(item?.image_url ?? "");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   /* auto-slug from name when not manually edited */
   useEffect(() => {
@@ -94,6 +98,20 @@ export function MenuItemFormModal({ item, categories, onClose, onSaved }: Props)
 
   function set<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  }
+
+  function clearImage() {
+    setImageFile(null);
+    setImagePreview("");
+    set("image_url", "");
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   function toggleBadge(badge: string) {
@@ -117,7 +135,7 @@ export function MenuItemFormModal({ item, categories, onClose, onSaved }: Props)
       price:       parseFloat(form.price),
       weight:      form.weight.trim() || null,
       category_id: form.category_id,
-      image_url:   form.image_url.trim() || null,
+      image_url:   finalImageUrl,
       badges:      form.badges.length > 0 ? form.badges : null,
       is_active:   form.is_active,
       sort_order:  parseInt(form.sort_order) || 0,
@@ -125,6 +143,29 @@ export function MenuItemFormModal({ item, categories, onClose, onSaved }: Props)
     };
 
     const supabase = createClient();
+
+    /* upload image if a new file was selected */
+    let finalImageUrl = form.image_url.trim() || null;
+    if (imageFile) {
+      setIsUploading(true);
+      const ext  = imageFile.name.split(".").pop() ?? "jpg";
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error: uploadErr } = await supabase.storage
+        .from("menu-images")
+        .upload(path, imageFile, { upsert: false });
+
+      if (uploadErr) {
+        setIsUploading(false);
+        setLoading(false);
+        setError(`Помилка завантаження: ${uploadErr.message}`);
+        return;
+      }
+
+      const { data: urlData } = supabase.storage.from("menu-images").getPublicUrl(path);
+      finalImageUrl = urlData.publicUrl;
+      setIsUploading(false);
+    }
+
     let err;
 
     if (isEdit) {
@@ -248,21 +289,49 @@ export function MenuItemFormModal({ item, categories, onClose, onSaved }: Props)
             </select>
           </Field>
 
-          {/* image url */}
-          <Field label="URL зображення">
+          {/* image upload */}
+          <Field label="Фото страви">
             <input
-              type="url"
-              value={form.image_url}
-              onChange={(e) => set("image_url", e.target.value)}
-              placeholder="https://…"
-              className={INPUT}
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleFileChange}
+              className="hidden"
             />
-            {form.image_url && (
-              <img
-                src={form.image_url}
-                alt="preview"
-                className="mt-2 w-16 h-16 rounded-xl object-cover border border-[#2C1E16]/10"
-              />
+            {imagePreview ? (
+              <div className="relative w-full h-36 rounded-xl overflow-hidden border border-[#2C1E16]/12 bg-[#F2EAE0]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 hover:opacity-100 bg-black/40 transition-opacity">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-3 py-1.5 rounded-lg bg-white text-[#2C1E16] text-xs font-semibold"
+                  >
+                    Замінити
+                  </button>
+                  <button
+                    type="button"
+                    onClick={clearImage}
+                    className="px-3 py-1.5 rounded-lg bg-red-500 text-white text-xs font-semibold"
+                  >
+                    Видалити
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full h-24 rounded-xl border-2 border-dashed border-[#2C1E16]/15
+                           flex flex-col items-center justify-center gap-2
+                           text-[#2C1E16]/35 hover:border-[#C68E58]/50 hover:text-[#C68E58]
+                           transition-colors bg-[#FDFBF7]"
+              >
+                <ImageIcon size={22} strokeWidth={1.5} />
+                <span className="text-xs font-medium">Натисніть, щоб обрати фото</span>
+                <span className="text-[10px]">JPG, PNG, WebP</span>
+              </button>
             )}
           </Field>
 
@@ -337,12 +406,17 @@ export function MenuItemFormModal({ item, categories, onClose, onSaved }: Props)
           <button
             type="submit"
             form="menu-item-form"
-            disabled={loading}
+            disabled={loading || isUploading}
             className="px-6 py-2.5 rounded-xl text-sm font-semibold bg-[#C68E58] text-white
                        hover:opacity-90 active:scale-[0.98] transition-all
-                       disabled:opacity-60 disabled:cursor-not-allowed"
+                       disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            {loading ? "Збереження…" : isEdit ? "Зберегти зміни" : "Додати страву"}
+            {isUploading
+              ? <><span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" /> Завантаження фото…</>
+              : loading
+                ? <><span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" /> Збереження…</>
+                : isEdit ? "Зберегти зміни" : "Додати страву"
+            }
           </button>
         </div>
       </div>
