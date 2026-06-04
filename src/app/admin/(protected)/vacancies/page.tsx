@@ -1,3 +1,6 @@
+export const dynamic   = "force-dynamic";
+export const revalidate = 0;
+
 import { createClient } from "@/lib/supabase/server";
 import { VacanciesManager } from "@/components/admin/VacanciesManager";
 import { ApplicationsManager } from "@/components/admin/ApplicationsManager";
