@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Heart, Share2 } from "lucide-react";
+import { Heart, Share2, Check } from "lucide-react";
 import type { MenuItem } from "@/types/database";
 import { MenuItemModal } from "./MenuItemModal";
 
@@ -48,19 +48,26 @@ interface MenuItemCardProps {
 
 export function MenuItemCard({ item, isFav = false, onToggleFav }: MenuItemCardProps) {
   const badges = item.badges ?? [];
-  const [open, setOpen] = useState(false);
+  const [open,   setOpen]   = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleShare = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const url = window.location.href;
+    const shareUrl = `${window.location.origin}/menu?item=${item.id}`;
     if (navigator.share) {
-      await navigator.share({ title: item.name, text: "Спробуй це в Cava Bar!", url }).catch(() => {});
+      navigator.share({
+        title: item.name || "Cava Bar",
+        text: `Спробуй ${item.name} в Cava Bar!`,
+        url: shareUrl,
+      }).catch((err) => console.log("Помилка share:", err));
     } else {
-      await navigator.clipboard.writeText(url).catch(() => {});
-      alert("Посилання скопійовано!");
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
     }
-  }, [item.name]);
+  }, [item.id, item.name]);
 
   const close = useCallback(() => setOpen(false), []);
 
@@ -110,10 +117,13 @@ export function MenuItemCard({ item, isFav = false, onToggleFav }: MenuItemCardP
               <button
                 onClick={handleShare}
                 aria-label="Поділитися"
-                className="w-5 h-5 flex items-center justify-center
+                className="flex items-center gap-1 text-[#C68E58]
                            hover:scale-110 active:scale-95 transition-transform duration-100"
               >
-                <Share2 size={16} strokeWidth={2} stroke="#C68E58" />
+                {copied
+                  ? <Check size={14} strokeWidth={2.5} />
+                  : <Share2 size={16} strokeWidth={2} />
+                }
               </button>
               {onToggleFav && (
                 <button
