@@ -207,15 +207,25 @@ export function ReviewsClient({ initialReviews }: { initialReviews: Review[] }) 
             )}
 
             {/* CTA */}
-            <div>
+            <div className="flex flex-col gap-3 w-full sm:w-56">
               <button
                 onClick={openModal}
-                className="px-7 py-3.5 rounded-full text-sm font-medium
+                className="w-full flex items-center justify-center px-6 py-3.5 rounded-full text-sm font-medium
                            border border-[#C68E58] text-[#C68E58]
                            hover:bg-[#C68E58] hover:text-white transition-colors duration-200"
               >
                 Залишити відгук
               </button>
+              <a
+                href="https://g.page/r/review"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center px-6 py-3.5 rounded-full text-sm font-medium
+                           border border-[#2C1E16]/20 text-[#2C1E16]
+                           hover:border-[#2C1E16]/50 transition-colors duration-200"
+              >
+                Оцінити в Google
+              </a>
             </div>
 
           </div>
@@ -242,9 +252,11 @@ export function ReviewsClient({ initialReviews }: { initialReviews: Review[] }) 
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
+            <div className="columns-1 sm:columns-2 gap-4 lg:gap-5">
               {reviews.map((review) => (
-                <ReviewCard key={review.id} review={review} />
+                <div key={review.id} className="break-inside-avoid mb-4">
+                  <ReviewCard review={review} />
+                </div>
               ))}
             </div>
           )}
