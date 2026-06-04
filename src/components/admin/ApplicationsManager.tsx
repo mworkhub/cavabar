@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -14,19 +14,31 @@ export interface JobApplication {
   created_at: string;
 }
 
-interface Props {
-  initialApplications: JobApplication[];
-}
-
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("uk-UA", {
     day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",
   });
 }
 
-export function ApplicationsManager({ initialApplications }: Props) {
-  const [apps, setApps] = useState<JobApplication[]>(initialApplications);
+export function ApplicationsManager() {
+  const [apps,    setApps]    = useState<JobApplication[]>([]);
+  const [loading, setLoading] = useState(true);
   const [marking, setMarking] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchApps() {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("job_applications")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      console.log("Отримані заявки:", data, error);
+      setApps((data as JobApplication[]) ?? []);
+      setLoading(false);
+    }
+    fetchApps();
+  }, []);
 
   async function markRead(id: string) {
     setMarking(id);
@@ -56,7 +68,12 @@ export function ApplicationsManager({ initialApplications }: Props) {
         )}
       </div>
 
-      {apps.length === 0 ? (
+      {loading ? (
+        <div className="bg-white rounded-2xl shadow-sm p-10 text-center text-[#2C1E16]/40 text-sm flex items-center justify-center gap-2">
+          <span className="w-4 h-4 rounded-full border-2 border-[#C68E58]/40 border-t-[#C68E58] animate-spin" />
+          Завантаження…
+        </div>
+      ) : apps.length === 0 ? (
         <div className="bg-white rounded-2xl shadow-sm p-10 text-center text-[#2C1E16]/40 text-sm">
           Заявок ще немає
         </div>
