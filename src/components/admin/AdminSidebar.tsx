@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, UtensilsCrossed, Star, MessageSquare,
-  Settings, LogOut, Menu, X, FileText, Briefcase,
+  Settings, LogOut, Menu, X, FileText, Briefcase, Bell,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -23,9 +23,35 @@ export function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [notifCount,    setNotifCount]    = useState(0);
+  const [notifLeads,    setNotifLeads]    = useState(0);
+  const [notifReviews,  setNotifReviews]  = useState(0);
 
   /* close on route change */
   useEffect(() => { setIsOpen(false); }, [pathname]);
+
+  /* fetch unread counts */
+  useEffect(() => {
+    async function fetchCounts() {
+      const supabase = createClient();
+      const [leadsRes, reviewsRes] = await Promise.all([
+        supabase
+          .from("leads")
+          .select("*", { count: "exact", head: true })
+          .eq("is_processed", false),
+        supabase
+          .from("reviews")
+          .select("*", { count: "exact", head: true })
+          .eq("approved", false),
+      ]);
+      const l = leadsRes.count   ?? 0;
+      const r = reviewsRes.count ?? 0;
+      setNotifLeads(l);
+      setNotifReviews(r);
+      setNotifCount(l + r);
+    }
+    fetchCounts();
+  }, [pathname]); /* re-fetch when navigating so badge stays fresh */
 
   /* body scroll lock while open */
   useEffect(() => {
@@ -74,22 +100,45 @@ export function AdminSidebar() {
         ].join(" ")}
       >
         {/* brand */}
-        <div className="px-5 py-5 border-b border-white/10 flex items-center justify-between gap-3">
-          <Link href="/admin" aria-label="Дашборд" className="flex items-center gap-3 min-w-0 hover:opacity-85 transition-opacity">
-            <div className="w-14 h-14 rounded-xl bg-[#F2EAE0] flex items-center justify-center shrink-0 p-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/logo.svg" alt="Cava Bar" className="w-full h-full object-contain" />
-            </div>
-            <p className="text-white/40 text-[11px] leading-snug">Admin Panel</p>
-          </Link>
-          <button
-            onClick={() => setIsOpen(false)}
-            aria-label="Закрити меню"
-            className="lg:hidden shrink-0 w-8 h-8 rounded-lg flex items-center justify-center
-                       text-white/45 hover:text-white hover:bg-white/10 transition-colors"
+        <div className="px-4 py-4 border-b border-white/10 flex items-center justify-between w-full">
+
+          {/* logo */}
+          <Link
+            href="/admin"
+            aria-label="Дашборд"
+            className="bg-[#F9F8F6] px-3 py-2 rounded-xl h-12 flex items-center justify-center
+                       transition-transform hover:scale-105"
           >
-            <X size={18} />
-          </button>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/logo.svg" alt="Cava Bar" className="h-full w-auto object-contain" />
+          </Link>
+
+          <div className="flex items-center gap-1">
+            {/* bell */}
+            <button
+              onClick={() => router.push(notifLeads >= notifReviews ? "/admin/leads" : "/admin/reviews")}
+              aria-label={`Сповіщення${notifCount > 0 ? `: ${notifCount} нових` : ""}`}
+              className="relative p-2 rounded-full hover:bg-white/10 transition-colors"
+            >
+              <Bell size={20} strokeWidth={2} className="text-white/70" />
+              {notifCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center
+                                 rounded-full bg-orange-500 text-[10px] font-bold text-white leading-none">
+                  {notifCount > 9 ? "9+" : notifCount}
+                </span>
+              )}
+            </button>
+
+            {/* mobile close */}
+            <button
+              onClick={() => setIsOpen(false)}
+              aria-label="Закрити меню"
+              className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center
+                         text-white/45 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* nav */}
