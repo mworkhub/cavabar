@@ -1,18 +1,20 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import { Copy, Download, ExternalLink, Check } from "lucide-react";
 
-const MENU_URL =
-  (process.env.NEXT_PUBLIC_SITE_URL ?? "https://cava-bar.vercel.app") + "/menu";
-
 export function QRCodeBlock() {
-  const canvasRef   = useRef<HTMLDivElement>(null);
-  const [copied, setCopied] = useState(false);
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const [copied,  setCopied]  = useState(false);
+  const [menuUrl, setMenuUrl] = useState("");
+
+  useEffect(() => {
+    setMenuUrl(`${window.location.origin}/menu`);
+  }, []);
 
   function handleCopy() {
-    navigator.clipboard.writeText(MENU_URL).then(() => {
+    navigator.clipboard.writeText(menuUrl).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
@@ -63,7 +65,7 @@ export function QRCodeBlock() {
           className="flex-shrink-0 p-3 rounded-2xl border border-[#2C1E16]/8 bg-white"
         >
           <QRCodeCanvas
-            value={MENU_URL}
+            value={menuUrl || "https://cava-bar.vercel.app/menu"}
             size={140}
             bgColor="#FFFFFF"
             fgColor="#2C1E16"
@@ -82,7 +84,7 @@ export function QRCodeBlock() {
             </p>
             <div className="flex items-center gap-2">
               <code className="flex-1 px-3 py-2 rounded-xl bg-[#F2EAE0] text-xs text-[#2C1E16] font-mono truncate">
-                {MENU_URL}
+                {menuUrl || "…"}
               </code>
               <button
                 onClick={handleCopy}
@@ -111,7 +113,7 @@ export function QRCodeBlock() {
               Завантажити PNG
             </button>
             <a
-              href={MENU_URL}
+              href={menuUrl || "/menu"}
               target="_blank"
               rel="noopener noreferrer"
               className={`${btnBase} border border-[#2C1E16]/15 text-[#2C1E16]/70 hover:border-[#C68E58]/50 hover:text-[#C68E58]`}
