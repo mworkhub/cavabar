@@ -34,7 +34,7 @@ export function AdminSidebar() {
   useEffect(() => {
     async function fetchCounts() {
       const supabase = createClient();
-      const [leadsRes, reviewsRes] = await Promise.all([
+      const [leadsRes, reviewsRes, appsRes] = await Promise.all([
         supabase
           .from("leads")
           .select("*", { count: "exact", head: true })
@@ -43,12 +43,17 @@ export function AdminSidebar() {
           .from("reviews")
           .select("*", { count: "exact", head: true })
           .eq("approved", false),
+        supabase
+          .from("job_applications")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "Нова"),
       ]);
-      const l = leadsRes.count   ?? 0;
+      const l = leadsRes.count  ?? 0;
       const r = reviewsRes.count ?? 0;
+      const a = appsRes.count   ?? 0;
       setNotifLeads(l);
       setNotifReviews(r);
-      setNotifCount(l + r);
+      setNotifCount(l + r + a);
     }
     fetchCounts();
   }, [pathname]); /* re-fetch when navigating so badge stays fresh */
@@ -116,7 +121,16 @@ export function AdminSidebar() {
           <div className="flex items-center gap-1">
             {/* bell */}
             <button
-              onClick={() => router.push(notifLeads >= notifReviews ? "/admin/leads" : "/admin/reviews")}
+              onClick={() => {
+                const appsCount = notifCount - notifLeads - notifReviews;
+                const dest =
+                  notifLeads >= notifReviews && notifLeads >= appsCount
+                    ? "/admin/leads"
+                    : notifReviews >= appsCount
+                    ? "/admin/reviews"
+                    : "/admin/vacancies";
+                router.push(dest);
+              }}
               aria-label={`Сповіщення${notifCount > 0 ? `: ${notifCount} нових` : ""}`}
               className="relative p-2 rounded-full hover:bg-white/10 transition-colors"
             >
