@@ -82,7 +82,12 @@ function ApplyForm({ positions, defaultPosition }: { positions: string[]; defaul
       .from("job_applications")
       .insert({ name: name.trim(), phone: phone.trim(), position, about: about.trim() });
 
-    if (error) { setStatus("error"); setErrorMsg("Не вдалося надіслати заявку. Спробуйте ще раз."); return; }
+    if (error) {
+      console.error("Supabase Error:", error);
+      setStatus("error");
+      setErrorMsg(`Не вдалося надіслати заявку: ${error.message}`);
+      return;
+    }
     setStatus("success");
   }
 
