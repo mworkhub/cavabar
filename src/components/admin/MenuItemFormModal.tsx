@@ -100,11 +100,31 @@ export function MenuItemFormModal({ item, categories, onClose, onSaved }: Props)
     setForm((f) => ({ ...f, [key]: value }));
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+
+    const isHeic = file.type === "image/heic" || file.type === "image/heif"
+      || /\.(heic|heif)$/i.test(file.name);
+
+    if (isHeic) {
+      setIsUploading(true);
+      try {
+        const heic2any = (await import("heic2any")).default;
+        const converted = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.85 });
+        const blob = Array.isArray(converted) ? converted[0] : converted;
+        const jpeg = new File([blob], file.name.replace(/\.(heic|heif)$/i, ".jpg"), { type: "image/jpeg" });
+        setImageFile(jpeg);
+        setImagePreview(URL.createObjectURL(jpeg));
+      } catch {
+        setError("Не вдалося конвертувати HEIC. Спробуйте зберегти фото як JPEG на iPhone.");
+      } finally {
+        setIsUploading(false);
+      }
+    } else {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
   }
 
   function clearImage() {
@@ -294,7 +314,7 @@ export function MenuItemFormModal({ item, categories, onClose, onSaved }: Props)
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/*,.heic,.heif"
               onChange={handleFileChange}
               className="hidden"
             />
@@ -330,7 +350,7 @@ export function MenuItemFormModal({ item, categories, onClose, onSaved }: Props)
               >
                 <ImageIcon size={22} strokeWidth={1.5} />
                 <span className="text-xs font-medium">Натисніть, щоб обрати фото</span>
-                <span className="text-[10px]">JPG, PNG, WebP</span>
+                <span className="text-[10px]">JPG, PNG, WebP, HEIC</span>
               </button>
             )}
           </Field>
