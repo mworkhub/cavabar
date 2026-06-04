@@ -23,8 +23,9 @@ export function SiteHeader() {
         <nav className="flex items-center gap-5 sm:gap-7">
           <Link
             href="/menu"
-            className="text-[13px] font-medium uppercase tracking-[0.15em] text-[#2C1E16]
-                       hover:text-[#C68E58] transition-colors duration-200"
+            className="text-[13px] font-medium uppercase tracking-[0.15em]
+                       bg-[#2C1E16] text-white px-5 py-2 rounded-full
+                       hover:bg-[#C68E58] transition-colors duration-200"
           >
             Меню
           </Link>

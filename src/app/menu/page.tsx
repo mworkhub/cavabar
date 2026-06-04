@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
@@ -54,20 +53,11 @@ export default async function MenuPage() {
     <main>
       {/* ════ Page header (sticky, h-14 = 56px) ════ */}
       <header className="sticky top-0 z-50 h-14 bg-[#FDFBF7]/95 backdrop-blur-sm border-b border-[#2C1E16]/6 flex items-center">
-        <div className="max-w-5xl mx-auto w-full px-4 flex items-center gap-3">
-          <Link
-            href="/"
-            aria-label="На головну"
-            className="p-1.5 -ml-1.5 rounded-lg text-[#2C1E16]/50 hover:text-[#2C1E16] hover:bg-[#2C1E16]/5 transition-colors"
-          >
-            <ArrowLeft size={18} strokeWidth={1.75} />
+        <div className="max-w-5xl mx-auto w-full px-4 flex items-center">
+          <Link href="/" aria-label="Cava Bar — на головну" className="hover:opacity-80 transition-opacity duration-300">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/logo.svg" alt="Cava Bar" className="h-10 w-auto" />
           </Link>
-          <span className="font-heading text-xl font-semibold text-[#2C1E16] tracking-wide">
-            Cava Bar
-          </span>
-          <span className="ml-auto text-xs text-[#2C1E16]/35 font-medium">
-            м. Броди
-          </span>
         </div>
       </header>
 
