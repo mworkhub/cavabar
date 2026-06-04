@@ -53,11 +53,14 @@ export default async function MenuPage() {
     <main>
       {/* ════ Page header (sticky, h-14 = 56px) ════ */}
       <header className="sticky top-0 z-50 h-14 bg-[#FDFBF7]/95 backdrop-blur-sm border-b border-[#2C1E16]/6 flex items-center">
-        <div className="max-w-5xl mx-auto w-full px-4 flex items-center">
+        <div className="max-w-5xl mx-auto w-full px-4 flex items-center justify-between">
           <Link href="/" aria-label="Cava Bar — на головну" className="hover:opacity-80 transition-opacity duration-300">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/logo.svg" alt="Cava Bar" className="h-10 w-auto" />
+            <img src="/images/logo.svg" alt="Cava Bar" className="h-10 md:h-12 w-auto brightness-0" />
           </Link>
+          <span className="text-sm font-medium tracking-wide text-[#2C1E16]">
+            м. Броди
+          </span>
         </div>
       </header>
 
