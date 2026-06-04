@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, UtensilsCrossed, Star, MessageSquare,
-  Settings, LogOut, Coffee, Menu, X, FileText, Briefcase,
+  Settings, LogOut, Menu, X, FileText, Briefcase,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -74,16 +74,15 @@ export function AdminSidebar() {
         ].join(" ")}
       >
         {/* brand */}
-        <div className="px-5 py-5 border-b border-white/10 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-[#C68E58] flex items-center justify-center shrink-0">
-              <Coffee size={16} strokeWidth={2.5} className="text-white" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-white font-heading text-[15px] font-bold leading-none">Cava Bar</p>
-              <p className="text-white/35 text-[11px] mt-0.5 leading-none">Admin Panel</p>
-            </div>
-          </div>
+        <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between gap-3">
+          <Link href="/admin" aria-label="Дашборд" className="hover:opacity-80 transition-opacity">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/logo.svg"
+              alt="Cava Bar"
+              className="h-10 w-auto object-contain brightness-0 invert"
+            />
+          </Link>
           <button
             onClick={() => setIsOpen(false)}
             aria-label="Закрити меню"
