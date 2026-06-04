@@ -73,9 +73,10 @@ export function MenuItemCard({ item, isFav = false, onToggleFav }: MenuItemCardP
         aria-label={`${item.name} — деталі`}
         onClick={() => setOpen(true)}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setOpen(true); }}
-        className="group flex gap-3 bg-white/60 rounded-2xl p-4 shadow-sm cursor-pointer
-                   transition-transform duration-150 will-change-transform
-                   hover:scale-[1.015] hover:shadow-md
+        className="group flex gap-3 bg-[#FAF8F4]/80 backdrop-blur-sm rounded-2xl p-4
+                   border border-[#E8E1D9]/70 shadow-sm shadow-stone-200/40
+                   cursor-pointer transition-transform duration-150 will-change-transform
+                   hover:scale-[1.015] hover:shadow-md hover:shadow-stone-200/50 hover:border-[#D9CEBE]/80
                    active:scale-[0.97]
                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C68E58]/60"
       >
