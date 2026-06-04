@@ -128,24 +128,10 @@ export function MenuItemFormModal({ item, categories, onClose, onSaved }: Props)
     setError(null);
     setLoading(true);
 
-    const payload = {
-      name:        form.name.trim(),
-      slug:        form.slug.trim() || toSlug(form.name),
-      description: form.description.trim() || null,
-      price:       parseFloat(form.price),
-      weight:      form.weight.trim() || null,
-      category_id: form.category_id,
-      image_url:   finalImageUrl,
-      badges:      form.badges.length > 0 ? form.badges : null,
-      is_active:   form.is_active,
-      sort_order:  parseInt(form.sort_order) || 0,
-      updated_at:  new Date().toISOString(),
-    };
-
     const supabase = createClient();
 
     /* upload image if a new file was selected */
-    let finalImageUrl = form.image_url.trim() || null;
+    let finalImageUrl: string | null = form.image_url.trim() || null;
     if (imageFile) {
       setIsUploading(true);
       const ext  = imageFile.name.split(".").pop() ?? "jpg";
@@ -165,6 +151,20 @@ export function MenuItemFormModal({ item, categories, onClose, onSaved }: Props)
       finalImageUrl = urlData.publicUrl;
       setIsUploading(false);
     }
+
+    const payload = {
+      name:        form.name.trim(),
+      slug:        form.slug.trim() || toSlug(form.name),
+      description: form.description.trim() || null,
+      price:       parseFloat(form.price),
+      weight:      form.weight.trim() || null,
+      category_id: form.category_id,
+      image_url:   finalImageUrl,
+      badges:      form.badges.length > 0 ? form.badges : null,
+      is_active:   form.is_active,
+      sort_order:  parseInt(form.sort_order) || 0,
+      updated_at:  new Date().toISOString(),
+    };
 
     let err;
 
