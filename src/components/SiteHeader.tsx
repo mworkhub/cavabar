@@ -43,6 +43,13 @@ export function SiteHeader() {
           >
             Контакти
           </Link>
+          <Link
+            href="/vacancies"
+            className="text-[13px] font-medium uppercase tracking-[0.15em] text-[#2C1E16]
+                       hover:text-[#C68E58] transition-colors duration-200"
+          >
+            Вакансії
+          </Link>
         </nav>
 
       </div>
