@@ -47,15 +47,16 @@ export function MenuItemModal({ item, onClose, isFav = false, onToggleFav }: Men
 
   const handleShare = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const shareUrl = `${window.location.origin}/menu?item=${item.id}`;
+    const shareUrl  = `${window.location.origin}/menu?item=${item.id}`;
+    const shareText = `Спробуй ${item.name} в Cava Bar!\n${shareUrl}`;
     if (navigator.share) {
-      navigator.share({
-        title: item.name || "Cava Bar",
-        text: `Спробуй ${item.name} в Cava Bar!`,
-        url: shareUrl,
-      }).catch((err) => console.log("Помилка share:", err));
+      try {
+        await navigator.share({ title: item.name || "Cava Bar", text: shareText, url: shareUrl });
+      } catch (err) {
+        console.log("Помилка share:", err);
+      }
     } else {
-      navigator.clipboard.writeText(shareUrl).then(() => {
+      navigator.clipboard.writeText(shareText).then(() => {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       });
