@@ -83,7 +83,7 @@ export function MenuClient({ categories, items }: Props) {
         className="sticky top-14 z-40 bg-[#FDFBF7]/95 backdrop-blur-sm border-b border-[#2C1E16]/6"
       >
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide
-                        md:justify-center w-full max-w-5xl mx-auto px-4 py-4">
+                        w-full max-w-5xl mx-auto px-4 py-4">
 
           {/* favorites pill */}
           <button
