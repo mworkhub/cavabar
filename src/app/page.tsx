@@ -6,8 +6,11 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { FadeIn } from "@/components/ui/FadeIn";
 import type { MenuItem, Review } from "@/types/database";
 
-const ABOUT_DEFAULT =
-  "Cava Bar — це простір, де час сповільнюється. Ми варимо каву зі спеціально підібраних купажів від локальних обсмажувачів, подаємо свіжу випічку щодня і щиро радіємо кожному, хто до нас завітає.";
+const DEFAULTS = {
+  hero_title:    "Це не лише\nпро каву —\nце про любов",
+  hero_subtitle: "Затишне місце у серці Бродів, де кожна чашка приготована з душею і щирою турботою.",
+  about_text:    "Cava Bar — це простір, де час сповільнюється. Ми варимо каву зі спеціально підібраних купажів від локальних обсмажувачів, подаємо свіжу випічку щодня і щиро радіємо кожному, хто до нас завітає.",
+};
 
 export const metadata: Metadata = {
   title: "Cava Bar — Кав'ярня в Бродах | Меню, Відгуки, Контакти",
@@ -87,12 +90,16 @@ export default async function Home() {
       .limit(3),
     supabase
       .from("site_content")
-      .select("value")
-      .eq("key", "about_text")
-      .single(),
+      .select("key, value")
+      .in("key", ["hero_title", "hero_subtitle", "about_text"]),
   ]);
 
-  const aboutText: string = (aboutRow as { value?: string } | null)?.value ?? ABOUT_DEFAULT;
+  const contentMap = Object.fromEntries(
+    ((aboutRow as { key: string; value: string }[] | null) ?? []).map((r) => [r.key, r.value])
+  );
+  const heroTitle    = contentMap.hero_title    ?? DEFAULTS.hero_title;
+  const heroSubtitle = contentMap.hero_subtitle ?? DEFAULTS.hero_subtitle;
+  const aboutText    = contentMap.about_text    ?? DEFAULTS.about_text;
 
   // preserve the desired display order
   const featuredItems: MenuItem[] = FEATURED_NAMES
@@ -123,15 +130,12 @@ export default async function Home() {
             </p>
 
             <h1 className="font-heading font-bold text-5xl md:text-6xl lg:text-[3.75rem] xl:text-[4.25rem]
-                           leading-[1.08] text-[#2C1E16] mb-7">
-              Це не лише<br />
-              про каву —<br />
-              <span className="text-[#C68E58] italic">це про&nbsp;любов</span>
+                           leading-[1.08] text-[#2C1E16] mb-7 whitespace-pre-line">
+              {heroTitle}
             </h1>
 
             <p className="text-[#2C1E16] text-base leading-relaxed mb-10 max-w-sm">
-              Затишне місце у серці Бродів, де кожна чашка
-              приготована з&nbsp;душею і щирою турботою.
+              {heroSubtitle}
             </p>
 
             <div className="flex flex-col sm:flex-row items-start justify-start gap-3">

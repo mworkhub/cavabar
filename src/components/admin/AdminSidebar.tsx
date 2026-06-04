@@ -15,7 +15,7 @@ const NAV = [
   { href: "/admin/reviews",   label: "Відгуки",      icon: Star },
   { href: "/admin/leads",     label: "Заявки",       icon: MessageSquare },
   { href: "/admin/gallery",   label: "Галерея",      icon: ImageIcon },
-  { href: "/admin/about",     label: "Про нас",      icon: FileText },
+  { href: "/admin/content",   label: "Контент",      icon: FileText },
   { href: "/admin/vacancies", label: "Вакансії",     icon: Briefcase },
   { href: "/admin/settings",  label: "Налаштування", icon: Settings },
 ];

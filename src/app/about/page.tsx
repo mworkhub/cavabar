@@ -29,19 +29,28 @@ const VALUES = [
   },
 ];
 
+const HISTORY_DEFAULT =
+  "Ідея створення закладу крутилась в голові дуже давно. Але якось не було ні часу, ні сміливості зробити перший крок...\n\nCava Bar — це затишний простір у самому серці Бродів, де час ніби сповільнюється. Ми відкрилися з однією простою ідеєю: зробити якісну каву доступною для кожного, хто живе або буває в нашому місті.\n\nМи варимо каву зі спеціально підібраних купажів від локальних українських обсмажувачів. Рецептури відточуються щодня — ми не зупиняємось на досягнутому і завжди шукаємо ідеальний баланс смаку та аромату в кожній чашці.\n\nДля нас важливо не просто подати напій, а створити момент. Теплий. Справжній. Тому кожен відвідувач тут — не клієнт, а гість, якому раді завжди і безумовно.\n\nЗ часом Cava Bar перетворився на щось більше, ніж просто кав'ярня. Це місце, де зустрічаються друзі, де народжуються ідеї, де можна просто помовчати наодинці з собою — і це теж буде добре.";
+
 export default async function AboutPage() {
+  const supabase = await createClient();
+
   let gallery: GalleryItem[] = [];
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase
-      .from("gallery")
-      .select("*")
-      .eq("is_active", true)
-      .order("sort_order", { ascending: true });
-    gallery = (data ?? []) as GalleryItem[];
-  } catch {
-    /* gallery table may not exist yet */
+  let historyText = HISTORY_DEFAULT;
+
+  const [galleryResult, contentResult] = await Promise.allSettled([
+    supabase.from("gallery").select("*").eq("is_active", true).order("sort_order", { ascending: true }),
+    supabase.from("site_content").select("value").eq("key", "about_history").single(),
+  ]);
+
+  if (galleryResult.status === "fulfilled" && galleryResult.value.data) {
+    gallery = galleryResult.value.data as GalleryItem[];
   }
+  if (contentResult.status === "fulfilled" && contentResult.value.data?.value) {
+    historyText = contentResult.value.data.value;
+  }
+
+  const historyParagraphs = historyText.split(/\n\n+/).map((p) => p.trim()).filter(Boolean);
 
   return (
     <main className="max-w-5xl mx-auto px-6 py-12 lg:py-20">
@@ -89,33 +98,19 @@ export default async function AboutPage() {
         {/* text */}
         <div className="flex flex-col gap-6">
 
-          {/* lead paragraph */}
-          <p className="text-xl md:text-2xl text-[#2C1E16] font-heading leading-relaxed font-medium">
-            Ідея створення закладу крутилась в голові дуже давно. Але якось не було ні часу, ні сміливості зробити перший крок...
-          </p>
+          {/* first paragraph — lead style */}
+          {historyParagraphs[0] && (
+            <p className="text-xl md:text-2xl text-[#2C1E16] font-heading leading-relaxed font-medium">
+              {historyParagraphs[0]}
+            </p>
+          )}
 
           <div className="w-10 h-[2px] bg-[#C68E58] rounded-full" />
 
           <div className="space-y-5 text-[#2C1E16] leading-loose text-[15px]">
-            <p>
-              Cava Bar — це затишний простір у самому серці Бродів, де час ніби сповільнюється.
-              Ми відкрилися з однією простою ідеєю: зробити якісну каву доступною для кожного,
-              хто живе або буває в нашому місті.
-            </p>
-            <p>
-              Ми варимо каву зі спеціально підібраних купажів від локальних українських
-              обсмажувачів. Рецептури відточуються щодня — ми не зупиняємось на досягнутому і
-              завжди шукаємо ідеальний баланс смаку та аромату в кожній чашці.
-            </p>
-            <p>
-              Для нас важливо не просто подати напій, а створити момент. Теплий. Справжній.
-              Тому кожен відвідувач тут — не клієнт, а гість, якому раді завжди і безумовно.
-            </p>
-            <p>
-              З часом Cava Bar перетворився на щось більше, ніж просто кав'ярня. Це місце,
-              де зустрічаються друзі, де народжуються ідеї, де можна просто помовчати наодинці
-              з собою — і це теж буде добре.
-            </p>
+            {historyParagraphs.slice(1).map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
           </div>
 
         </div>
