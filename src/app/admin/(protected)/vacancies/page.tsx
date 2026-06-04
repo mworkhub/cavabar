@@ -10,7 +10,7 @@ export default async function AdminVacanciesPage() {
     .order("sort_order", { ascending: true });
 
   return (
-    <div className="p-6 lg:p-10 max-w-3xl">
+    <div className="p-6 lg:p-10 max-w-4xl mx-auto w-full">
       <VacanciesManager initialVacancies={(data ?? []) as Vacancy[]} />
     </div>
   );

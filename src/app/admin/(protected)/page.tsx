@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { UtensilsCrossed, Star, MessageSquare, TrendingUp, ArrowRight, Phone } from "lucide-react";
 import type { Review, Lead } from "@/types/database";
+import { QRCodeBlock } from "@/components/admin/QRCodeBlock";
 
 export const metadata = { title: "Дашборд — Cava Bar Admin" };
 
@@ -118,6 +119,11 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* QR code */}
+      <div className="mb-4">
+        <QRCodeBlock />
       </div>
 
       {/* recent panels */}
