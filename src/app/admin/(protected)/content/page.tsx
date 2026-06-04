@@ -22,7 +22,7 @@ export default async function AdminContentPage() {
   const map = Object.fromEntries((data ?? []).map((r) => [r.key, r.value]));
 
   return (
-    <div className="p-6 lg:p-10 max-w-3xl">
+    <div className="p-6 lg:p-10 max-w-4xl mx-auto w-full">
       <ContentManager
         initial={{
           hero_title:    map.hero_title    ?? DEFAULTS.hero_title,
