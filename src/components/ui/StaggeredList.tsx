@@ -18,9 +18,10 @@ const itemVariant = {
 interface StaggeredListProps {
   children: ReactNode;
   className?: string;
+  itemClassName?: string;
 }
 
-export function StaggeredList({ children, className }: StaggeredListProps) {
+export function StaggeredList({ children, className, itemClassName }: StaggeredListProps) {
   return (
     <motion.div
       variants={container}
@@ -30,7 +31,7 @@ export function StaggeredList({ children, className }: StaggeredListProps) {
       className={className}
     >
       {React.Children.map(children, (child, i) => (
-        <motion.div key={i} variants={itemVariant}>
+        <motion.div key={i} variants={itemVariant} className={itemClassName}>
           {child}
         </motion.div>
       ))}

@@ -264,7 +264,7 @@ export function ReviewsClient({ initialReviews }: { initialReviews: Review[] }) 
               </button>
             </div>
           ) : (
-            <StaggeredList className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
+            <StaggeredList className="columns-1 sm:columns-2 gap-6" itemClassName="break-inside-avoid mb-6">
               {reviews.map((review) => (
                 <ReviewCard key={review.id} review={review} />
               ))}
