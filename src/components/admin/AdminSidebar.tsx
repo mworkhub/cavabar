@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -19,46 +19,90 @@ const NAV = [
   { href: "/admin/settings",  label: "Налаштування", icon: Settings },
 ];
 
+const DISMISSED_KEY = "notif_dismissed_at";
+
 export function AdminSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
-  const [notifCount,    setNotifCount]    = useState(0);
-  const [notifLeads,    setNotifLeads]    = useState(0);
-  const [notifReviews,  setNotifReviews]  = useState(0);
+  const router   = useRouter();
 
-  /* close on route change */
+  const [isOpen,       setIsOpen]       = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [notifCount,   setNotifCount]   = useState(0);
+  const [notifLeads,   setNotifLeads]   = useState(0);
+  const [notifReviews, setNotifReviews] = useState(0);
+  const [notifApps,    setNotifApps]    = useState(0);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => { setIsOpen(false); }, [pathname]);
 
-  /* fetch unread counts */
   useEffect(() => {
-    async function fetchCounts() {
-      const supabase = createClient();
-      const [leadsRes, reviewsRes, appsRes] = await Promise.all([
-        supabase
-          .from("leads")
-          .select("*", { count: "exact", head: true })
-          .eq("is_processed", false),
-        supabase
-          .from("reviews")
-          .select("*", { count: "exact", head: true })
-          .eq("approved", false),
-        supabase
-          .from("job_applications")
-          .select("*", { count: "exact", head: true })
-          .eq("status", "Нова"),
-      ]);
-      const l = leadsRes.count  ?? 0;
-      const r = reviewsRes.count ?? 0;
-      const a = appsRes.count   ?? 0;
-      setNotifLeads(l);
-      setNotifReviews(r);
-      setNotifCount(l + r + a);
+    if (!dropdownOpen) return;
+    function onClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
     }
-    fetchCounts();
-  }, [pathname]); /* re-fetch when navigating so badge stays fresh */
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [dropdownOpen]);
 
-  /* body scroll lock while open */
+  useEffect(() => {
+    fetchCounts();
+  }, [pathname]);
+
+  async function fetchCounts() {
+    const supabase    = createClient();
+    const dismissedAt = localStorage.getItem(DISMISSED_KEY);
+
+    let leadsQ = supabase
+      .from("leads")
+      .select("*", { count: "exact", head: true })
+      .eq("is_processed", false);
+    if (dismissedAt) leadsQ = leadsQ.gt("created_at", dismissedAt);
+
+    let reviewsQ = supabase
+      .from("reviews")
+      .select("*", { count: "exact", head: true })
+      .eq("approved", false);
+    if (dismissedAt) reviewsQ = reviewsQ.gt("created_at", dismissedAt);
+
+    const [leadsRes, reviewsRes, appsRes] = await Promise.all([
+      leadsQ,
+      reviewsQ,
+      supabase
+        .from("job_applications")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "Нова"),
+    ]);
+
+    const l = leadsRes.count  ?? 0;
+    const r = reviewsRes.count ?? 0;
+    const a = appsRes.count   ?? 0;
+    setNotifLeads(l);
+    setNotifReviews(r);
+    setNotifApps(a);
+    setNotifCount(l + r + a);
+  }
+
+  async function markAllRead() {
+    setNotifCount(0);
+    setNotifLeads(0);
+    setNotifReviews(0);
+    setNotifApps(0);
+    localStorage.setItem(DISMISSED_KEY, new Date().toISOString());
+    const supabase = createClient();
+    await supabase
+      .from("job_applications")
+      .update({ status: "Прочитано" })
+      .eq("status", "Нова");
+  }
+
+  async function handleBellClick() {
+    if (notifCount > 0) await markAllRead();
+    setDropdownOpen((v) => !v);
+  }
+
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -68,12 +112,11 @@ export function AdminSidebar() {
     const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/admin/login");
-    router.refresh(); // flush RSC cache so protected layout re-checks auth
+    router.refresh();
   }
 
   return (
     <>
-      {/* ── Mobile hamburger trigger ── */}
       <button
         onClick={() => setIsOpen(true)}
         aria-label="Відкрити меню"
@@ -83,7 +126,6 @@ export function AdminSidebar() {
         <Menu size={20} />
       </button>
 
-      {/* ── Backdrop ── */}
       <div
         onClick={() => setIsOpen(false)}
         className={[
@@ -93,22 +135,16 @@ export function AdminSidebar() {
         ].join(" ")}
       />
 
-      {/* ── Sidebar panel ── */}
       <aside
         className={[
-          /* mobile: fixed overlay, slides in/out */
           "fixed inset-y-0 left-0 z-50 w-64",
           "transition-transform duration-300 ease-in-out",
           isOpen ? "translate-x-0" : "-translate-x-full",
-          /* desktop: static in-flow column */
           "lg:static lg:translate-x-0 lg:w-60 lg:flex-shrink-0",
           "flex flex-col bg-[#2C1E16] h-full",
         ].join(" ")}
       >
-        {/* brand */}
         <div className="px-4 py-4 border-b border-white/10 flex items-center justify-between w-full">
-
-          {/* logo */}
           <Link
             href="/admin"
             aria-label="Дашборд"
@@ -120,31 +156,77 @@ export function AdminSidebar() {
           </Link>
 
           <div className="flex items-center gap-1">
-            {/* bell */}
-            <button
-              onClick={() => {
-                const appsCount = notifCount - notifLeads - notifReviews;
-                const dest =
-                  notifLeads >= notifReviews && notifLeads >= appsCount
-                    ? "/admin/leads"
-                    : notifReviews >= appsCount
-                    ? "/admin/reviews"
-                    : "/admin/vacancies";
-                router.push(dest);
-              }}
-              aria-label={`Сповіщення${notifCount > 0 ? `: ${notifCount} нових` : ""}`}
-              className="relative p-2 rounded-full hover:bg-white/10 transition-colors"
-            >
-              <Bell size={20} strokeWidth={2} className="text-white/70" />
-              {notifCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center
-                                 rounded-full bg-orange-500 text-[10px] font-bold text-white leading-none">
-                  {notifCount > 9 ? "9+" : notifCount}
-                </span>
-              )}
-            </button>
+            <div ref={dropdownRef} className="relative">
+              <button
+                onClick={handleBellClick}
+                aria-label={`Сповіщення${notifCount > 0 ? `: ${notifCount} нових` : ""}`}
+                className="relative p-2 rounded-full hover:bg-white/10 transition-colors"
+              >
+                <Bell size={20} strokeWidth={2} className="text-white/70" />
+                {notifCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center
+                                   rounded-full bg-orange-500 text-[10px] font-bold text-white leading-none">
+                    {notifCount > 9 ? "9+" : notifCount}
+                  </span>
+                )}
+              </button>
 
-            {/* mobile close */}
+              {dropdownOpen && (
+                <div className="absolute right-0 top-full mt-2 w-60 bg-[#3D2B1F] rounded-2xl
+                                shadow-xl shadow-black/30 border border-white/10 overflow-hidden z-50">
+                  <div className="px-4 py-3 border-b border-white/10">
+                    <p className="text-xs font-semibold text-white/45 uppercase tracking-wide">
+                      Сповіщення
+                    </p>
+                  </div>
+                  <div className="flex flex-col py-1">
+                    <Link
+                      href="/admin/leads"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center justify-between px-4 py-3 hover:bg-white/10 transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <MessageSquare size={15} className="text-white/55" />
+                        <span className="text-sm text-white/80">Заявки</span>
+                      </div>
+                      {notifLeads > 0
+                        ? <span className="text-xs font-semibold text-orange-400">{notifLeads} нових</span>
+                        : <span className="text-xs text-white/30">Немає нових</span>
+                      }
+                    </Link>
+                    <Link
+                      href="/admin/reviews"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center justify-between px-4 py-3 hover:bg-white/10 transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Star size={15} className="text-white/55" />
+                        <span className="text-sm text-white/80">Відгуки</span>
+                      </div>
+                      {notifReviews > 0
+                        ? <span className="text-xs font-semibold text-orange-400">{notifReviews} нових</span>
+                        : <span className="text-xs text-white/30">Немає нових</span>
+                      }
+                    </Link>
+                    <Link
+                      href="/admin/vacancies"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center justify-between px-4 py-3 hover:bg-white/10 transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Briefcase size={15} className="text-white/55" />
+                        <span className="text-sm text-white/80">Кандидати</span>
+                      </div>
+                      {notifApps > 0
+                        ? <span className="text-xs font-semibold text-orange-400">{notifApps} нових</span>
+                        : <span className="text-xs text-white/30">Немає нових</span>
+                      }
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <button
               onClick={() => setIsOpen(false)}
               aria-label="Закрити меню"
@@ -156,7 +238,6 @@ export function AdminSidebar() {
           </div>
         </div>
 
-        {/* nav */}
         <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
           {NAV.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
@@ -178,7 +259,6 @@ export function AdminSidebar() {
           })}
         </nav>
 
-        {/* sign out */}
         <div className="px-3 pb-6 pt-3 border-t border-white/10">
           <button
             onClick={handleSignOut}
