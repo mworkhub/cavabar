@@ -12,17 +12,41 @@ export default function AdminLoginPage() {
   const [showPwd, setShowPwd]   = useState(false);
   const [error, setError]       = useState<string | null>(null);
   const [loading, setLoading]   = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [lockedUntil, setLockedUntil] = useState<number | null>(null);
+
+  const LOCKOUT_AFTER = 5;
+  const LOCKOUT_MS    = 60_000; // 1 minute
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+
+    /* rate limiting */
+    if (lockedUntil && Date.now() < lockedUntil) {
+      const secs = Math.ceil((lockedUntil - Date.now()) / 1000);
+      setError(`Забагато спроб. Спробуйте через ${secs} сек.`);
+      return;
+    }
+    if (lockedUntil && Date.now() >= lockedUntil) {
+      setLockedUntil(null);
+      setAttempts(0);
+    }
+
     setLoading(true);
 
     const supabase = createClient();
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
 
     if (authError) {
-      setError("Невірний email або пароль.");
+      const next = attempts + 1;
+      setAttempts(next);
+      if (next >= LOCKOUT_AFTER) {
+        setLockedUntil(Date.now() + LOCKOUT_MS);
+        setError("5 невдалих спроб. Вхід заблоковано на 1 хвилину.");
+      } else {
+        setError(`Невірний email або пароль. Спроба ${next}/${LOCKOUT_AFTER}.`);
+      }
       setLoading(false);
       return;
     }

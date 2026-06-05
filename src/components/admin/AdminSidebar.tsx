@@ -68,6 +68,7 @@ export function AdminSidebar() {
     const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/admin/login");
+    router.refresh(); // flush RSC cache so protected layout re-checks auth
   }
 
   return (
