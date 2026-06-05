@@ -33,7 +33,7 @@ export function ApplicationsManager() {
         .select("*")
         .order("created_at", { ascending: false });
 
-      console.log("Отримані заявки:", data, error);
+      if (error) console.error("Помилка завантаження заявок:", error);
       setApps((data as JobApplication[]) ?? []);
       setLoading(false);
     }
@@ -48,7 +48,9 @@ export function ApplicationsManager() {
       .update({ status: "Прочитано" })
       .eq("id", id);
 
-    if (!error) {
+    if (error) {
+      console.error("Помилка оновлення статусу заявки:", error);
+    } else {
       setApps((prev) => prev.map((a) => a.id === id ? { ...a, status: "Прочитано" } : a));
     }
     setMarking(null);
@@ -58,7 +60,6 @@ export function ApplicationsManager() {
 
   return (
     <div className="mt-12">
-      {/* header */}
       <div className="flex items-center gap-3 mb-5">
         <h2 className="font-heading text-2xl font-bold text-[#2C1E16]">Відгуки кандидатів</h2>
         {newCount > 0 && (
@@ -85,10 +86,9 @@ export function ApplicationsManager() {
               <div
                 key={app.id}
                 className={`bg-white rounded-2xl shadow-sm shadow-[#2C1E16]/6 p-5
-                            ${isNew ? "border-l-4 border-orange-400" : "border-l-4 border-transparent"}`}
+                            border-l-4 ${isNew ? "border-orange-400" : "border-[#2C1E16]/10"}`}
               >
                 <div className="flex items-start justify-between gap-4 flex-wrap">
-                  {/* main info */}
                   <div className="flex items-start gap-4 flex-1 min-w-0">
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center
                                      font-heading font-bold text-sm flex-shrink-0
@@ -124,7 +124,6 @@ export function ApplicationsManager() {
                     </div>
                   </div>
 
-                  {/* action */}
                   {isNew && (
                     <button
                       onClick={() => markRead(app.id)}
