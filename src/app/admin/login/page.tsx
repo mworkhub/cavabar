@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Coffee, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { loginAction } from "./actions";
 
@@ -112,13 +112,12 @@ export default function AdminLoginPage() {
 
       <div className="w-full max-w-sm">
 
-        {/* logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-[#2C1E16] flex items-center justify-center mb-4 shadow-lg">
-            <Coffee size={26} strokeWidth={2} className="text-[#C68E58]" />
+          <div className="w-24 h-24 rounded-2xl bg-[#F9F8F6] flex items-center justify-center mb-4 shadow-md">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/logo.svg" alt="Cava Bar" className="w-[80%] h-auto" />
           </div>
-          <h1 className="font-heading text-2xl font-bold text-[#2C1E16]">Cava Bar</h1>
-          <p className="text-[#2C1E16]/45 text-sm mt-1">Адміністративна панель</p>
+          <p className="text-[#2C1E16]/45 text-sm">Адміністративна панель</p>
         </div>
 
         {/* card */}
