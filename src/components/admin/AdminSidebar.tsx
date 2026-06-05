@@ -19,8 +19,6 @@ const NAV = [
   { href: "/admin/settings",  label: "Налаштування", icon: Settings },
 ];
 
-const DISMISSED_KEY = "notif_dismissed_at";
-
 export function AdminSidebar() {
   const pathname = usePathname();
   const router   = useRouter();
@@ -52,24 +50,16 @@ export function AdminSidebar() {
   }, [pathname]);
 
   async function fetchCounts() {
-    const supabase    = createClient();
-    const dismissedAt = localStorage.getItem(DISMISSED_KEY);
-
-    let leadsQ = supabase
-      .from("leads")
-      .select("*", { count: "exact", head: true })
-      .eq("is_processed", false);
-    if (dismissedAt) leadsQ = leadsQ.gt("created_at", dismissedAt);
-
-    let reviewsQ = supabase
-      .from("reviews")
-      .select("*", { count: "exact", head: true })
-      .eq("approved", false);
-    if (dismissedAt) reviewsQ = reviewsQ.gt("created_at", dismissedAt);
-
+    const supabase = createClient();
     const [leadsRes, reviewsRes, appsRes] = await Promise.all([
-      leadsQ,
-      reviewsQ,
+      supabase
+        .from("leads")
+        .select("*", { count: "exact", head: true })
+        .eq("is_processed", false),
+      supabase
+        .from("reviews")
+        .select("*", { count: "exact", head: true })
+        .eq("approved", false),
       supabase
         .from("job_applications")
         .select("*", { count: "exact", head: true })
@@ -83,24 +73,6 @@ export function AdminSidebar() {
     setNotifReviews(r);
     setNotifApps(a);
     setNotifCount(l + r + a);
-  }
-
-  async function markAllRead() {
-    setNotifCount(0);
-    setNotifLeads(0);
-    setNotifReviews(0);
-    setNotifApps(0);
-    localStorage.setItem(DISMISSED_KEY, new Date().toISOString());
-    const supabase = createClient();
-    await supabase
-      .from("job_applications")
-      .update({ status: "Прочитано" })
-      .eq("status", "Нова");
-  }
-
-  async function handleBellClick() {
-    if (notifCount > 0) await markAllRead();
-    setDropdownOpen((v) => !v);
   }
 
   useEffect(() => {
@@ -158,7 +130,7 @@ export function AdminSidebar() {
           <div className="flex items-center gap-1">
             <div ref={dropdownRef} className="relative">
               <button
-                onClick={handleBellClick}
+                onClick={() => setDropdownOpen((v) => !v)}
                 aria-label={`Сповіщення${notifCount > 0 ? `: ${notifCount} нових` : ""}`}
                 className="relative p-2 rounded-full hover:bg-white/10 transition-colors"
               >
