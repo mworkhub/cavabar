@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { logger } from "@/lib/logger";
 
 /* ── In-memory rate limiter ──────────────────────────────────
    Resets on cold start (acceptable for single-admin MVP).
@@ -11,15 +12,18 @@ const LOGIN_MAX     = 10;   // max POST-like navigations per window
 const LOGIN_WINDOW  = 60_000; // 1 minute in ms
 
 function isLoginRateLimited(ip: string): boolean {
-  const now  = Date.now();
+  const now   = Date.now();
   const entry = loginAttempts.get(ip);
 
   if (!entry || now > entry.resetAt) {
     loginAttempts.set(ip, { count: 1, resetAt: now + LOGIN_WINDOW });
     return false;
   }
-  if (entry.count >= LOGIN_MAX) return true;
   entry.count++;
+  if (entry.count > LOGIN_MAX) {
+    logger.auth.rateLimited(ip, entry.count);
+    return true;
+  }
   return false;
 }
 
@@ -81,6 +85,12 @@ export async function middleware(request: NextRequest) {
     !request.nextUrl.pathname.startsWith("/admin/login");
 
   if (isAdminPath && !user) {
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      request.headers.get("x-real-ip") ??
+      "unknown";
+    logger.auth.blocked(ip, request.nextUrl.pathname);
+
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/admin/login";
     return NextResponse.redirect(loginUrl);
