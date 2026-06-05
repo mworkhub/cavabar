@@ -14,8 +14,8 @@ const SUPABASE_HOST = "etccfzabuakzhpemqiyj.supabase.co";
 function buildCSP(): string {
   const directives: Record<string, string[]> = {
     "default-src":  ["'self'"],
-    "script-src":   ["'self'", "'unsafe-inline'"],   // JSON-LD + Next.js internals
-    "style-src":    ["'self'", "'unsafe-inline'"],   // Tailwind inline styles
+    "script-src":   ["'self'", "'unsafe-inline'", "https://hcaptcha.com", "https://*.hcaptcha.com"],
+    "style-src":    ["'self'", "'unsafe-inline'", "https://hcaptcha.com", "https://*.hcaptcha.com"],
     "img-src":      [
       "'self'", "data:", "blob:",
       `https://${SUPABASE_HOST}`,
@@ -27,9 +27,10 @@ function buildCSP(): string {
     "connect-src":  [
       "'self'",
       `https://${SUPABASE_HOST}`,
-      `wss://${SUPABASE_HOST}`,   // Supabase Realtime (future use)
+      `wss://${SUPABASE_HOST}`,
+      "https://hcaptcha.com", "https://*.hcaptcha.com",
     ],
-    "frame-src":    ["https://www.google.com"],      // Google Maps embed
+    "frame-src":    ["https://www.google.com", "https://hcaptcha.com", "https://*.hcaptcha.com"],
     "font-src":     ["'self'"],                      // next/font serves fonts locally
     "object-src":   ["'none'"],
     "base-uri":     ["'self'"],
