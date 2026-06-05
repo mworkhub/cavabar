@@ -1,9 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Coffee, Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+
+const STORAGE_KEY    = "cava-login-lockout";
+const LOCKOUT_AFTER  = 5;
+const LOCKOUT_MS     = 60_000;
+
+function readLockout(): { attempts: number; lockedUntil: number | null } {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return { attempts: 0, lockedUntil: null };
+    const parsed = JSON.parse(raw);
+    if (parsed.lockedUntil && Date.now() >= parsed.lockedUntil) {
+      sessionStorage.removeItem(STORAGE_KEY);
+      return { attempts: 0, lockedUntil: null };
+    }
+    return parsed;
+  } catch { return { attempts: 0, lockedUntil: null }; }
+}
+
+function writeLockout(attempts: number, lockedUntil: number | null) {
+  try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ attempts, lockedUntil })); } catch {}
+}
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -15,22 +36,24 @@ export default function AdminLoginPage() {
   const [attempts, setAttempts] = useState(0);
   const [lockedUntil, setLockedUntil] = useState<number | null>(null);
 
-  const LOCKOUT_AFTER = 5;
-  const LOCKOUT_MS    = 60_000; // 1 minute
+  /* Restore rate-limit state from sessionStorage on mount */
+  useEffect(() => {
+    const saved = readLockout();
+    setAttempts(saved.attempts);
+    setLockedUntil(saved.lockedUntil);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
 
-    /* rate limiting */
-    if (lockedUntil && Date.now() < lockedUntil) {
-      const secs = Math.ceil((lockedUntil - Date.now()) / 1000);
+    /* rate limiting — reads live state, not stale closure */
+    const { attempts: cur, lockedUntil: lock } = readLockout();
+
+    if (lock && Date.now() < lock) {
+      const secs = Math.ceil((lock - Date.now()) / 1000);
       setError(`Забагато спроб. Спробуйте через ${secs} сек.`);
       return;
-    }
-    if (lockedUntil && Date.now() >= lockedUntil) {
-      setLockedUntil(null);
-      setAttempts(0);
     }
 
     setLoading(true);
@@ -39,10 +62,13 @@ export default function AdminLoginPage() {
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
 
     if (authError) {
-      const next = attempts + 1;
+      const next = cur + 1;
+      const newLock = next >= LOCKOUT_AFTER ? Date.now() + LOCKOUT_MS : null;
       setAttempts(next);
-      if (next >= LOCKOUT_AFTER) {
-        setLockedUntil(Date.now() + LOCKOUT_MS);
+      setLockedUntil(newLock);
+      writeLockout(next, newLock);
+
+      if (newLock) {
         setError("5 невдалих спроб. Вхід заблоковано на 1 хвилину.");
       } else {
         setError(`Невірний email або пароль. Спроба ${next}/${LOCKOUT_AFTER}.`);
@@ -51,6 +77,7 @@ export default function AdminLoginPage() {
       return;
     }
 
+    sessionStorage.removeItem(STORAGE_KEY);
     router.push("/admin");
   }
 

@@ -172,11 +172,16 @@ export function MenuItemFormModal({ item, categories, onClose, onSaved }: Props)
     let finalImageUrl: string | null = form.image_url.trim() || null;
     if (imageFile) {
       setIsUploading(true);
-      const ext  = imageFile.name.split(".").pop() ?? "jpg";
-      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      /* Force safe extension from actual MIME type, never trust filename */
+      const MIME_TO_EXT: Record<string, string> = {
+        "image/jpeg": "jpg", "image/jpg": "jpg", "image/png": "png",
+        "image/webp": "webp", "image/gif": "gif",
+      };
+      const safeExt = MIME_TO_EXT[imageFile.type] ?? "jpg";
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${safeExt}`;
       const { error: uploadErr } = await supabase.storage
         .from("menu-images")
-        .upload(path, imageFile, { upsert: false });
+        .upload(path, imageFile, { upsert: false, contentType: imageFile.type });
 
       if (uploadErr) {
         setIsUploading(false);

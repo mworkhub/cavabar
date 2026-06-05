@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 
-const MIN_HUMAN_MS = 1500; // bots submit instantly; humans take >1.5s
+const MIN_HUMAN_MS = 2500; // bots submit in <100ms; humans rarely fill in <2.5s
 
 export function useHoneypot() {
   const [trap, setTrap] = useState("");
