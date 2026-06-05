@@ -18,7 +18,7 @@ export function SiteHeader() {
           />
         </Link>
 
-        <nav className="flex flex-row flex-nowrap items-center gap-1 sm:gap-3 md:gap-5">
+        <nav className="flex flex-row flex-nowrap items-center justify-between gap-3 sm:gap-5 md:gap-8">
           <Link
             href="/menu"
             className="whitespace-nowrap text-[10px] sm:text-[11px] md:text-[13px]
