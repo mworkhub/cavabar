@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Star, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { reviewSchema } from "@/lib/schemas";
+import { useHoneypot } from "@/hooks/useHoneypot";
 import { StaggeredList } from "@/components/ui/StaggeredList";
 import type { Review } from "@/types/database";
 
@@ -106,6 +107,7 @@ export function ReviewsClient({ initialReviews }: { initialReviews: Review[] }) 
   type SubmitStatus = "idle" | "loading" | "error";
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>("idle");
   const [errorMsg,     setErrorMsg]     = useState("");
+  const { honeypotProps, checkHoneypot } = useHoneypot();
 
   /* ── rating stats ── */
   const avgRating =
@@ -151,6 +153,9 @@ export function ReviewsClient({ initialReviews }: { initialReviews: Review[] }) 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setErrorMsg("");
+
+    const botCheck = checkHoneypot();
+    if (botCheck) { setSubmitSuccess(true); return; }
 
     const result = reviewSchema.safeParse({ author_name: name.trim(), rating, text: text.trim() });
     if (!result.success) {
@@ -344,6 +349,9 @@ export function ReviewsClient({ initialReviews }: { initialReviews: Review[] }) 
                 </h2>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                  <div style={{ position: "absolute", left: "-9999px", top: "-9999px" }} aria-hidden="true">
+                    <input name="website" type="text" {...honeypotProps} />
+                  </div>
 
                   {/* name */}
                   <div className="flex flex-col gap-1.5">

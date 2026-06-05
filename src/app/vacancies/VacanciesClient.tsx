@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { jobApplicationSchema } from "@/lib/schemas";
+import { useHoneypot } from "@/hooks/useHoneypot";
 import type { Vacancy } from "@/types/database";
 
 /* ─── vacancy card ───────────────────────────────────────── */
@@ -70,10 +71,14 @@ function ApplyForm({ positions, defaultPosition }: { positions: string[]; defaul
   type Status = "idle" | "loading" | "success" | "error";
   const [status,   setStatus]   = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const { honeypotProps, checkHoneypot } = useHoneypot();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrorMsg("");
+
+    const botCheck = checkHoneypot();
+    if (botCheck) { setStatus("success"); return; }
     if (!name.trim())  { setErrorMsg("Введіть ваше ім'я"); return; }
     if (!phone.trim()) { setErrorMsg("Введіть номер телефону"); return; }
 
@@ -121,6 +126,9 @@ function ApplyForm({ positions, defaultPosition }: { positions: string[]; defaul
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <div style={{ position: "absolute", left: "-9999px", top: "-9999px" }} aria-hidden="true">
+        <input name="website" type="text" {...honeypotProps} />
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div className="flex flex-col gap-1.5">
           <label className={labelClass}>Ваше ім&apos;я</label>

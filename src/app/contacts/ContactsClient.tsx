@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, MapPin, Clock, Phone, X, Send } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { contactSchema } from "@/lib/schemas";
+import { useHoneypot } from "@/hooks/useHoneypot";
 
 /* ─── icons ──────────────────────────────────────────────── */
 
@@ -68,6 +69,7 @@ export function ContactsClient() {
   type SubmitStatus = "idle" | "loading" | "error";
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>("idle");
   const [errorMsg,     setErrorMsg]     = useState("");
+  const { honeypotProps, checkHoneypot } = useHoneypot();
 
   /* ── modal controls ── */
   function openModal() {
@@ -107,6 +109,9 @@ export function ContactsClient() {
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     setErrorMsg("");
+
+    const botCheck = checkHoneypot();
+    if (botCheck) { setSubmitSuccess(true); return; } /* silently succeed for bots */
 
     const result = contactSchema.safeParse({ name: name.trim(), phone: phone.trim(), message: message.trim() });
     if (!result.success) {
@@ -328,6 +333,10 @@ export function ContactsClient() {
                 </h2>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                  {/* honeypot — invisible to humans, filled by bots */}
+                  <div style={{ position: "absolute", left: "-9999px", top: "-9999px" }} aria-hidden="true">
+                    <input name="website" type="text" {...honeypotProps} />
+                  </div>
 
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold uppercase tracking-wide text-[#4A3428]">
