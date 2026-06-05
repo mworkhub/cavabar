@@ -28,6 +28,8 @@ function buildCSP(): string {
       "'self'",
       `https://${SUPABASE_HOST}`,
       `wss://${SUPABASE_HOST}`,
+      "https://*.supabase.co",
+      "wss://*.supabase.co",
       "https://hcaptcha.com", "https://*.hcaptcha.com",
     ],
     "frame-src":    ["https://www.google.com", "https://hcaptcha.com", "https://*.hcaptcha.com"],
