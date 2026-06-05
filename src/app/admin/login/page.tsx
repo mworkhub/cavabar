@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Coffee, Eye, EyeOff } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
+import { loginAction } from "./actions";
 
-const STORAGE_KEY    = "cava-login-lockout";
-const LOCKOUT_AFTER  = 5;
-const LOCKOUT_MS     = 60_000;
+const STORAGE_KEY   = "cava-login-lockout";
+const LOCKOUT_AFTER = 5;
+const LOCKOUT_MS    = 60_000;
 
 function readLockout(): { attempts: number; lockedUntil: number | null } {
   try {
@@ -28,13 +29,16 @@ function writeLockout(attempts: number, lockedUntil: number | null) {
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail]       = useState("");
-  const [password, setPassword] = useState("");
-  const [showPwd, setShowPwd]   = useState(false);
-  const [error, setError]       = useState<string | null>(null);
-  const [loading, setLoading]   = useState(false);
-  const [attempts, setAttempts] = useState(0);
-  const [lockedUntil, setLockedUntil] = useState<number | null>(null);
+  const captchaRef = useRef<HCaptcha>(null);
+
+  const [email,        setEmail]        = useState("");
+  const [password,     setPassword]     = useState("");
+  const [showPwd,      setShowPwd]      = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [error,        setError]        = useState<string | null>(null);
+  const [loading,      setLoading]      = useState(false);
+  const [attempts,     setAttempts]     = useState(0);
+  const [lockedUntil,  setLockedUntil]  = useState<number | null>(null);
 
   /* Restore rate-limit state from sessionStorage on mount */
   useEffect(() => {
@@ -47,7 +51,7 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setError(null);
 
-    /* rate limiting — reads live state, not stale closure */
+    /* ── Client-side lockout check (persisted in sessionStorage) ── */
     const { attempts: cur, lockedUntil: lock } = readLockout();
 
     if (lock && Date.now() < lock) {
@@ -56,23 +60,45 @@ export default function AdminLoginPage() {
       return;
     }
 
+    if (!captchaToken) {
+      setError("Будь ласка, пройдіть перевірку на робота.");
+      return;
+    }
+
     setLoading(true);
 
-    const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    /* ── Server Action: captcha verify → Supabase auth ── */
+    const result = await loginAction(email, password, captchaToken);
 
-    if (authError) {
-      const next = cur + 1;
+    /* Always reset captcha after attempt — tokens are single-use */
+    captchaRef.current?.resetCaptcha();
+    setCaptchaToken(null);
+
+    if (!result.success) {
+      if (result.error === "captcha_failed") {
+        setError("Перевірка на робота не пройдена. Спробуйте ще раз.");
+        setLoading(false);
+        return;
+      }
+
+      if (result.error === "server_error") {
+        setError("Помилка сервера. Спробуйте через хвилину.");
+        setLoading(false);
+        return;
+      }
+
+      /* auth_failed — increment rate limit counter */
+      const next    = cur + 1;
       const newLock = next >= LOCKOUT_AFTER ? Date.now() + LOCKOUT_MS : null;
       setAttempts(next);
       setLockedUntil(newLock);
       writeLockout(next, newLock);
 
-      if (newLock) {
-        setError("5 невдалих спроб. Вхід заблоковано на 1 хвилину.");
-      } else {
-        setError(`Невірний email або пароль. Спроба ${next}/${LOCKOUT_AFTER}.`);
-      }
+      setError(
+        newLock
+          ? "5 невдалих спроб. Вхід заблоковано на 1 хвилину."
+          : `Невірний email або пароль. Спроба ${next}/${LOCKOUT_AFTER}.`
+      );
       setLoading(false);
       return;
     }
@@ -150,6 +176,19 @@ export default function AdminLoginPage() {
               </div>
             </div>
 
+            {/* hCaptcha widget */}
+            <div className="flex justify-center">
+              <HCaptcha
+                ref={captchaRef}
+                sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY!}
+                onVerify={(token) => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken(null)}
+                onError={() => setCaptchaToken(null)}
+                theme="light"
+                size="normal"
+              />
+            </div>
+
             {/* error */}
             {error && (
               <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">
@@ -157,10 +196,10 @@ export default function AdminLoginPage() {
               </p>
             )}
 
-            {/* submit */}
+            {/* submit — disabled until captcha is solved */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !captchaToken}
               className="mt-1 w-full py-3 rounded-xl bg-[#C68E58] text-white text-sm font-semibold
                          hover:opacity-90 active:scale-[0.98] transition-all duration-100
                          disabled:opacity-60 disabled:cursor-not-allowed"
