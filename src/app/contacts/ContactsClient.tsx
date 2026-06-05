@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { ArrowLeft, MapPin, Clock, Phone, X, Send } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { contactSchema } from "@/lib/schemas";
 
 /* ─── icons ──────────────────────────────────────────────── */
 
@@ -107,16 +108,18 @@ export function ContactsClient() {
     e.preventDefault();
     setErrorMsg("");
 
-    if (!name.trim())    { setErrorMsg("Введіть ваше ім'я"); return; }
-    if (!phone.trim())   { setErrorMsg("Введіть номер телефону"); return; }
-    if (!message.trim()) { setErrorMsg("Напишіть ваше повідомлення"); return; }
+    const result = contactSchema.safeParse({ name: name.trim(), phone: phone.trim(), message: message.trim() });
+    if (!result.success) {
+      setErrorMsg(result.error.issues[0].message);
+      return;
+    }
 
     setSubmitStatus("loading");
 
     const sb = createClient();
     const { error } = await sb
       .from("leads")
-      .insert({ type: "contact", name: name.trim(), phone: phone.trim(), message: message.trim() });
+      .insert({ type: "contact", ...result.data });
 
     if (error) {
       setSubmitStatus("error");

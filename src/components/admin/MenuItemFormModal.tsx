@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { X, Upload, ImageIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { menuItemSchema, validateImageFile } from "@/lib/schemas";
 import type { MenuItem, MenuCategory } from "@/types/database";
 
 const BADGE_OPTIONS = [
@@ -104,6 +105,9 @@ export function MenuItemFormModal({ item, categories, onClose, onSaved }: Props)
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const fileError = validateImageFile(file);
+    if (fileError) { setError(fileError); e.target.value = ""; return; }
+
     const isHeic = file.type === "image/heic" || file.type === "image/heif"
       || /\.(heic|heif)$/i.test(file.name);
 
@@ -146,8 +150,22 @@ export function MenuItemFormModal({ item, categories, onClose, onSaved }: Props)
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    setLoading(true);
 
+    const validation = menuItemSchema.safeParse({
+      name:        form.name,
+      slug:        form.slug,
+      description: form.description,
+      price:       parseFloat(form.price),
+      weight:      form.weight,
+      category_id: form.category_id,
+      sort_order:  parseInt(form.sort_order) || 0,
+    });
+    if (!validation.success) {
+      setError(validation.error.issues[0].message);
+      return;
+    }
+
+    setLoading(true);
     const supabase = createClient();
 
     /* upload image if a new file was selected */

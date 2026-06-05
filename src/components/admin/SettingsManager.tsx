@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Phone, MapPin, Link2, Clock, BarChart2, Layers, Save, CheckCircle2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { settingsSchema } from "@/lib/schemas";
 import type { SiteSettings } from "@/types/database";
 
 interface Props {
@@ -45,8 +46,15 @@ export function SettingsManager({ settings }: Props) {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setStatus("saving");
     setErrorMsg("");
+
+    const validation = settingsSchema.safeParse(form);
+    if (!validation.success) {
+      setErrorMsg(validation.error.issues[0].message);
+      return;
+    }
+
+    setStatus("saving");
 
     const payload = {
       id:                   1,

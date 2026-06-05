@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Star, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { reviewSchema } from "@/lib/schemas";
 import { StaggeredList } from "@/components/ui/StaggeredList";
 import type { Review } from "@/types/database";
 
@@ -151,16 +152,18 @@ export function ReviewsClient({ initialReviews }: { initialReviews: Review[] }) 
     e.preventDefault();
     setErrorMsg("");
 
-    if (!name.trim())           { setErrorMsg("Введіть ваше ім'я"); return; }
-    if (rating === 0)           { setErrorMsg("Оберіть оцінку від 1 до 5 зірочок"); return; }
-    if (text.trim().length < 5) { setErrorMsg("Напишіть трохи більше у вашому відгуку"); return; }
+    const result = reviewSchema.safeParse({ author_name: name.trim(), rating, text: text.trim() });
+    if (!result.success) {
+      setErrorMsg(result.error.issues[0].message);
+      return;
+    }
 
     setSubmitStatus("loading");
 
     const sb = createClient();
     const { error } = await sb
       .from("reviews")
-      .insert({ author_name: name.trim(), rating, text: text.trim() });
+      .insert(result.data);
 
     if (error) {
       setSubmitStatus("error");

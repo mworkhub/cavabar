@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { jobApplicationSchema } from "@/lib/schemas";
 import type { Vacancy } from "@/types/database";
 
 /* ─── vacancy card ───────────────────────────────────────── */
@@ -76,11 +77,19 @@ function ApplyForm({ positions, defaultPosition }: { positions: string[]; defaul
     if (!name.trim())  { setErrorMsg("Введіть ваше ім'я"); return; }
     if (!phone.trim()) { setErrorMsg("Введіть номер телефону"); return; }
 
+    const result = jobApplicationSchema.safeParse({
+      name: name.trim(), phone: phone.trim(), position, about: about.trim(),
+    });
+    if (!result.success) {
+      setErrorMsg(result.error.issues[0].message);
+      return;
+    }
+
     setStatus("loading");
     const sb = createClient();
     const { error } = await sb
       .from("job_applications")
-      .insert({ name: name.trim(), phone: phone.trim(), position, about: about.trim() });
+      .insert(result.data);
 
     if (error) {
       console.error("Supabase Error:", error);
